@@ -44,6 +44,8 @@ module.exports = (app, passport) => {
   app.post('/followships/:id', tweetController.addFollowing)
   app.delete('/followships/:id', tweetController.removeFollowing)
 
+  app.get('/users/:id/tweets', userController.getUser)
+
   
   app.get('/admin', (req, res) => res.redirect('/admin/tweets'));
   app.get('/admin/tweets', authenticatedAdmin, adminController.getTweets);
