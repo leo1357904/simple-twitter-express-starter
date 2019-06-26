@@ -1,0 +1,43 @@
+<div class="card mb-3">
+  <div class="row no-gutters">
+    <div class="col-md-4">
+      <img src="{{profile.avatar}}" class="card-img" alt="avatar" style="width: 175px;margin-bottom: 5px;">
+
+      <div class="card-body">
+        <h5 class="card-title" style="color:#2E8B57;">{{profile.name}}</h5>
+        <p class="card-text">{{profile.introduction}}</p>
+
+        <h6>Tweets 32</h6>
+        <h6>Following 32</h6>
+        <h6>Follower 32</h6>
+        <h6>Like 32</h6>
+
+        <a href="/users/{{profile.id}}/edit" class="btn btn-primary mt-2">Edit Profile</a>
+        <form action="/users/{{profile.id}}/followings" method="POST" style="display: contents;">
+          <button type="submit" class="btn btn-primary mt-2">Follow</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="row">
+          <div class="col-md-2">
+            <img src="{{profile.avatar}}" class="card-img mt-4" alt="avatar" style="width: 100px;margin-bottom: 25px;">
+          </div>
+
+          <div class="col-md-10">
+            <div class="tweets mt-3">
+              <a href="/users/{{profile.id}}/tweets">{{profile.name}}, 2018-11-14, 02:31</a>
+              <p>tweets</p>
+              <div class="row">
+                <p class="ml-3" style="color:#6495ED;">Reply(2)</p>
+                <p class="ml-3" style="color:red;">like(17)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
