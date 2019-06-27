@@ -11,6 +11,12 @@ const db = require('./models');
 const app = express();
 const port = 3000;
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
+app.use('/upload', express.static(__dirname + '/upload'))
+
 // use helpers.getUser(req) to replace req.user
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
 
