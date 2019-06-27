@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt-nodejs');
 const db = require('../models');
 
-const { User } = db;
+const { User, Tweet } = db;
 
 const userController = {
   signUpPage: (req, res) => res.render('signup'),
@@ -43,7 +43,7 @@ const userController = {
   },
 
   getUser: (req, res) => {
-    User.findByPk(req.params.id).then(user => {
+    User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then(user => {
       res.render('user/user', { profile: user })
     })
   }
