@@ -12,10 +12,10 @@ const app = express();
 const port = 3000;
 
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
+  dotenv.config();
 }
 
-app.use('/upload', express.static(__dirname + '/upload'))
+app.use('/upload', express.static(__dirname + '/upload')); // eslint-disable-line
 
 // use helpers.getUser(req) to replace req.user
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
@@ -39,7 +39,7 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages');
   res.locals.error_messages = req.flash('error_messages');
-  res.locals.user = req.user;
+  res.locals.user = helpers.getUser(req);
   next();
 });
 
