@@ -1,16 +1,17 @@
 const imgur = require('imgur-node-api');
 const db = require('../models');
 
-const { User } = db.User;
-const { Tweet } = db.Tweet;
+const { User } = db;
+const { Tweet } = db;
 
 
-const { IMGUR_CLIENT_ID } = process.env.IMGUR_CLIENT_ID;
+const { IMGUR_CLIENT_ID } = process.env;
 
 const userController = {
   getUser: (req, res) => {
     User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
-      res.render('user/user', { profile: user });
+      const tweetCount = user.Tweets.length;
+      res.render('user/user', { profile: user, tweetCount });
     });
   },
 
@@ -53,6 +54,13 @@ const userController = {
         });
       }
     }
+  },
+
+  getLike: (req, res) => {
+    User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
+      const tweetCount = user.Tweets.length;
+      res.render('user/like', { user, tweetCount });
+    });
   },
 };
 

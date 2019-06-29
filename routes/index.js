@@ -8,4 +8,5 @@ module.exports = (app) => {
   app.get('/users/:id/tweets', userController.getUser);
   app.get('/users/:id/edit', userController.editUser);
   app.put('/users/:id/tweets', upload.single('avatar'), userController.putUser);
+  app.get('/users/:id/likes', userController.getLike);
 };

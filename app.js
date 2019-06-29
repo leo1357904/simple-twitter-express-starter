@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 
 app.listen(port, () => {
   db.sequelize.sync();
-  console.log(`Example app listening on port ${port}!`);
+  console.log(`Example app listening on port ${port}!`); // eslint-disable-line
 });
 
 require('./routes')(app);
