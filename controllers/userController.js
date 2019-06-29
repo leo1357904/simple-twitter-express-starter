@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt-nodejs');
 const imgur = require('imgur-node-api');
 const db = require('../models');
 
-const { User, Tweet } = db;
+const { User, Tweet, Followship } = db;
 const { IMGUR_CLIENT_ID } = process.env;
 
 const userController = {
@@ -45,9 +45,24 @@ const userController = {
   },
 
   getUser: (req, res) => {
-    User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
+    User.findByPk(req.params.id, {
+      include: [
+        { model: Tweet, include: [User] },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' },
+      ],
+    }).then((user) => {
       const tweetCount = user.Tweets.length;
-      res.render('user/user', { profile: user, tweetCount });
+      const FollowerCount = user.Followers.length;
+      const FollowingCount = user.Followings.length;
+      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      res.render('user/user', {
+        profile: user,
+        tweetCount,
+        FollowerCount,
+        FollowingCount,
+        isFollowed,
+      });
     });
   },
 
@@ -96,6 +111,44 @@ const userController = {
     User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
       const tweetCount = user.Tweets.length;
       res.render('user/like', { user, tweetCount });
+    });
+  },
+
+  addFollowing: (req, res) => {
+    Followship.create({
+      FollowerId: req.user.id,
+      FollowingId: req.params.userId,
+    }).then(() => {
+      res.redirect('back');
+    });
+  },
+
+  removeFollowing: (req, res) => {
+    Followship.findOne({
+      where: {
+        FollowerId: req.user.id,
+        FollowingId: req.params.userId,
+      },
+    }).then((followship) => {
+      followship.destroy().then(() => {
+        res.redirect('back');
+      });
+    });
+  },
+
+  getFollower: (req, res) => {
+    User.findByPk(req.params.id, {
+      include: [
+        { model: User, as: 'Followers' },
+      ],
+    }).then((users) => {
+      const followerUsers = users.map((user => ({
+        ...user.dataValues,
+        FollowerCount: user.Followers.length,
+        isFollowed: req.user.Followings.map(d => d.id).includes(user.id),
+      })));
+      const sortUsers = followerUsers.sort({ createdAt: 'desc' });
+      res.render('user/follower', { sortUsers });
     });
   },
 };
