@@ -3,7 +3,7 @@ const imgur = require('imgur-node-api');
 const db = require('../models');
 
 const { User, Tweet } = db;
-const { IMGUR_CLIENT_ID } = process.env.IMGUR_CLIENT_ID;
+const { IMGUR_CLIENT_ID } = process.env;
 
 const userController = {
   signUpPage: (req, res) => res.render('signup'),
@@ -46,7 +46,8 @@ const userController = {
 
   getUser: (req, res) => {
     User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
-      res.render('user/user', { profile: user });
+      const tweetCount = user.Tweets.length;
+      res.render('user/user', { profile: user, tweetCount });
     });
   },
 
@@ -89,6 +90,13 @@ const userController = {
         });
       }
     }
+  },
+
+  getLike: (req, res) => {
+    User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
+      const tweetCount = user.Tweets.length;
+      res.render('user/like', { user, tweetCount });
+    });
   },
 };
 

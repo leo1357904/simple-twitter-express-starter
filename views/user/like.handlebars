@@ -1,28 +1,26 @@
 <div class="card mb-3">
   <div class="row no-gutters">
     <div class="col-md-4 mt-2">
-      <img src="{{profile.avatar}}" class="card-img" alt="avatar" style="width: 175px;margin-bottom: 5px;">
+      <img src="{{user.avatar}}" class="card-img" alt="avatar" style="width: 175px;margin-bottom: 5px;">
 
       <div class="card-body">
-        <h5 class="card-title" style="color:#2E8B57;">{{profile.name}}</h5>
-        <p class="card-text" style="color:rgb(46, 113, 139);">{{profile.introduction}}</p>
+        <h5 class="card-title" style="color:#2E8B57;">{{user.name}}</h5>
+        <p class="card-text" style="color:rgb(46, 113, 139);">{{user.introduction}}</p>
 
         <h6>Tweets {{tweetCount}}</h6>
         <h6>Following 32</h6>
         <h6>Follower 32</h6>
-        <a href="/users/{{profile.id}}/likes">
+        <a href="/users/{{user.id}}/likes">
           <h6 class="like" style="color: black;">Like 32</h6>
         </a>
 
-        <a href="/users/{{profile.id}}/edit" class="btn btn-primary mt-2">Edit Profile</a>
-        <form action="/users/{{profile.id}}/followings" method="POST" style="display: contents;">
-          <button type="submit" class="btn btn-primary mt-2">Follow</button>
-        </form>
+        <a href="/users/{{user.id}}/edit" class="btn btn-primary mt-2">Edit Profile</a>
       </div>
     </div>
 
     <div class="col-md-8">
-      {{#each profile.Tweets}}
+      <h1 class="likeTitle mb-4" style="color: #2E8B57;">Like</h1>
+      {{#each user.Tweets}}
       <div class="card mt-2" style="border: solid 1px gray">
         <div class="row">
           <div class="col-md-2">
