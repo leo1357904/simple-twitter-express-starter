@@ -50,8 +50,9 @@ module.exports = (app, passport) => {
   app.get('/users/:id/tweets', userController.getUser);
   app.get('/users/:id/edit', userController.editUser);
   app.put('/users/:id/tweets', upload.single('avatar'), userController.putUser);
+  app.get('/users/:id/likes', userController.getLike);
 
-  
+
   app.get('/admin', (req, res) => res.redirect('/admin/tweets'));
   app.get('/admin/tweets', authenticatedAdmin, adminController.getTweets);
   app.delete('/admin/tweets/:id', authenticatedAdmin, adminController.deleteTweet);

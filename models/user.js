@@ -1,5 +1,8 @@
 'use strict'; // eslint-disable-line
+<<<<<<< HEAD
 
+=======
+>>>>>>> add like.handlebars views
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     name: DataTypes.STRING,
