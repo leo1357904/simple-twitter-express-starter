@@ -30,7 +30,14 @@ passport.serializeUser((user, cb) => {
 });
 
 passport.deserializeUser(async (id, cb) => {
-  const user = await User.findByPk(id);
+  const user = await User.findByPk(
+    id,
+    {
+      include: [
+        { model: User, as: 'Followings' },
+      ],
+    }
+  );
   user.role = Number(user.role); // 為了讓前端辨識admin身份，number 0才會是falsy
   return cb(null, user);
 });
