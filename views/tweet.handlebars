@@ -1,1 +1,83 @@
-<h1>hello</h1>
+<br /><br />
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<div class="card" style="width: 18rem;">
+		  <img src="{{user.avatar}}" class="card-img-top" alt="...">
+		  <div class="card-body">
+		    <h1 class="card-title">{{user.name}}</h1>
+		    <p class="card-text">{{user.introduction}}</p>
+
+		    <h5 class="card-title">Tweets {{tweetsCount}}</h5>
+		    <h5 class="card-title">Following {{followingsCount}}</h5>
+		    <h5 class="card-title">Follower {{followersCount}}</h5>
+		    <h5 class="card-title">Like {{likedTweetsCount}}</h5>
+
+		    <p>
+					{{#if isFollowed }}
+					  <form action="/followships/{{user.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Unfollow</button></form>
+					{{else}}
+					  <form action="/followships/{{user.id}}" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Follow</button></form>
+					{{/if}}
+				</p>
+		  </div>
+		</div>
+		
+	</div>
+	<div class="col-md-8">
+		<h1>Tweets</h1>
+
+		<div class="card mb-3 mx-auto shadow-sm" style="max-width: 600px;">
+		  <div class="row no-gutters">
+	      <div class="col-md-4">
+	    		<img class="card-img" src="{{user.avatar}}" width="286px" height="180px">
+	      </div>
+				<div class="col-md-8">
+	        <div class="card-body">
+
+	          <!-- <h5 class="card-title" style="color:blue;">{{user.name}}, {{moment tweet.createdAt}}</h5> -->
+	          <a href="/users/{{user.id}}/tweets" class="card-link" style="font-size:21px; color: blue">{{user.name}}, {{moment tweet.createdAt}}</a>
+
+	          <p class="card-text">{{tweet.description}}</p>
+
+	          <div class="row">
+	          	<a href="/tweets/{{tweet.id}}/replies" class="card-link">Reply({{repliesCount}})</a>
+	          	<!-- <button type="button" class="btn btn-link" href="/tweets/:id/replies">Reply({{this.replyCount}})</button> -->
+		          {{#if isLiked }}
+	          		<form action="/tweets/{{tweet.id}}/unlike?_method=DELETE" method="POST"><button type="submit" class="btn btn-link" style="color:red;">unlike({{likedUsersCount}})</button></form>
+	        		{{else}}
+	          		<form action="/tweets/{{tweet.id}}/like" method="POST"><button type="submit" class="btn btn-link" style="color:red;">like({{likedUsersCount}})</button></form>
+	        		{{/if}}
+	          </div>
+
+	        </div>
+	  		</div>
+			</div>
+	  </div>
+	  <h1>Replies</h1>
+	  {{#each tweet.Replies}}
+		  <div class="card mb-3 mx-auto shadow-sm" style="max-width: 600px;">
+		  	<div class="row no-gutters">
+		      <div class="col-md-4">
+		    		<img class="card-img" src="{{this.User.avatar}}" width="286px" height="180px">
+		      </div>
+					<div class="col-md-8">
+		        <div class="card-body">
+
+		          <h5 class="card-title" style="color:blue;">{{this.User.name}}, {{moment this.createdAt}}</h5>
+		          <p class="card-text">{{this.comment}}</p>
+		         
+		        </div>
+		  		</div>
+				</div>
+		  </div>
+		{{/each}}
+		<form action="/tweets/{{tweet.id}}/replies" method="POST" style="max-width: 600px;" class="mx-auto">
+		  <div class="form-group">
+		    <textarea class="form-control" id="text" name="text" rows="3" placeholder=""></textarea>
+		  </div>
+		  <input type="hidden" name="tweetId" value="{{tweet.id}}"/>
+		  <button type="submit" class="btn btn-primary float-right">Reply</button>
+		</form>
+	</div>
+</div>
