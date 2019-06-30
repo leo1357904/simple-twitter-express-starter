@@ -24,7 +24,7 @@ const tweetController = {
 	      include: [
 	        { model: User, as: 'Followers' }
 	      ]}).then(users => {
-	      	console.log(users)
+	      	// console.log(users)
 
 	      	users = users.map(user => ({
 	          ...user.dataValues,
@@ -32,6 +32,8 @@ const tweetController = {
 	          isFollowed: req.user.Followings.map(d => d.id).includes(user.id)
 	        }))
 	        users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
+	        users = users.slice(0, 10)
+	        // console.log(users)
 
 	      	tweets = tweets.map((tweet) => ({
 		        ...tweet.dataValues,
@@ -49,34 +51,67 @@ const tweetController = {
   },
 
   postTweet: (req, res) => {
-		return Tweet.create({
-			UserId: req.user.id,
-			description: req.body.text,
-		}).then((tweet) => {
-		  res.redirect('/tweets')
-		})
+  	const textLength = req.body.text.length
+  	if ((textLength > 0) && (textLength < 140)) {
+			return Tweet.create({
+				UserId: req.user.id,
+				description: req.body.text,
+			}).then((tweet) => {
+			  res.redirect('/tweets')
+			})
+		}
 	},
 
 	getTweet: (req, res) => {
 	  return Tweet.findByPk(req.params.id, {
       include: [
-        User,
-        Reply, 
-        // { model: User, as: 'FavoritedUsers' },
-        // { model: User, as: 'LikedUsers' },
-        // { model: Comment, include: [User] }
+        // Reply, 
+        { model: Reply, include: [User] },
+        { model: User, as: 'LikedUsers' },
+        { model: User, include: [Tweet] }
       ]}).then(tweet => {
-      	console.log(tweet)
-        // const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
-        // const isLiked = restaurant.LikedUsers.map(d => d.id).includes(req.user.id)
-        
-        return res.render('tweet', { 
-          tweet: tweet, 
-          // isFavorited: isFavorited, 
-          // isLiked: isLiked 
+      	// console.log(tweet.Replies)
+      	const likedUsersCount = tweet.LikedUsers.length
+      	const repliesCount = tweet.Replies.length
+      	const tweetsCount = tweet.User.Tweets.length
+      	// console.log(likedUsersCount, repliesCount, tweetsCount)
+        const isLiked = tweet.LikedUsers.map(d => d.id).includes(req.user.id)
+        User.findByPk(tweet.UserId, {
+        	include: [
+        		{ model: User, as: 'Followers' },
+        		{ model: User, as: 'Followings' },
+        		{ model: Tweet, as: 'LikedTweets' },
+        ]}).then(user => {
+        	// console.log(user)
+        	const followersCount = user.Followers.length
+        	const followingsCount = user.Followings.length
+        	const likedTweetsCount = user.LikedTweets.length
+        	const isFollowed = user.Followers.map(d => d.id).includes(req.user.id)
+        	// console.log(followersCount, followingsCount, likedTweetsCount)
+        	return res.render('tweet', { 
+	          tweet: tweet, 
+	          user: user,
+	          likedUsersCount: likedUsersCount,
+	          repliesCount: repliesCount,
+	          tweetsCount: tweetsCount,
+	          isLiked: isLiked,
+	          followersCount: followersCount,
+	          followingsCount: followingsCount,
+	          likedTweetsCount: likedTweetsCount,
+	          isFollowed: isFollowed
+	        })
         })
-        
       })
+	},
+
+	postReply: (req, res) => {
+		return Reply.create({
+			UserId: req.user.id,
+			TweetId: req.body.tweetId,
+			comment: req.body.text,
+		}).then((reply) => {
+		  res.redirect(`/tweets/${req.body.tweetId}/replies`)
+		})
 	},
 
 	addLike: (req, res) => {
@@ -84,7 +119,7 @@ const tweetController = {
       UserId: req.user.id,
       TweetId: req.params.id
     }).then((like) => {
-      return res.redirect('/tweets')
+      return res.redirect('back')
     })
   },
 
@@ -95,7 +130,7 @@ const tweetController = {
     }}).then((like) => {
       like.destroy()
       .then((like) => {
-        return res.redirect('/tweets')
+        return res.redirect('back')
       })
     })
   },
@@ -105,7 +140,7 @@ const tweetController = {
       followerId: req.user.id,
       followingId: req.params.id
     }).then((followship) => {
-      return res.redirect('/tweets')
+      return res.redirect('/back')
     })
   },
 
@@ -116,7 +151,7 @@ const tweetController = {
     }}).then((followship) => {
       followship.destroy()
       .then((followship) => {
-        return res.redirect('/tweets')
+        return res.redirect('/back')
       })
     })
   },

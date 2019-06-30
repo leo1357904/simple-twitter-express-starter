@@ -13,7 +13,7 @@
 		  <div class="card mb-3 mx-auto shadow-sm" style="max-width: 600px;">
 		  	<div class="row no-gutters">
 		      <div class="col-md-4">
-		    		<img class="card-img" src="{{this.image}}" width="286px" height="180px">
+		    		<img class="card-img" src="{{this.User.avatar}}" width="286px" height="180px">
 		      </div>
 					<div class="col-md-8">
 		        <div class="card-body">
@@ -39,11 +39,14 @@
 			<div class="card mb-3 mx-auto shadow-sm" style="">
 		  	<div class="row no-gutters">
 		      <div class="col-md-4">
-		    		<img class="card-img" src="{{this.image}}" width="140px" height="140px">
+		    		<img class="card-img" src="{{this.avatar}}" width="140px" height="140px">
 		      </div>  
 					<div class="col-md-8">
 		        <div class="card-body">
-		          <h5 class="card-title" style="color:blue;">{{this.name}}</h5>
+
+		          <!-- <h5 class="card-title" style="color:blue;">{{this.name}}</h5> -->
+		          <a href="/users/{{this.id}}/tweets" class="card-link" style="font-size:21px;">{{this.name}}</a>
+
 		          <p class="card-text">{{this.introduction}}</p>
 		          <div class="row">
 		          	<!-- <span class="badge badge-secondary">{{this.FollowerCount}}</span> -->
