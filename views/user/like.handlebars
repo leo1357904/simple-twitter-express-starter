@@ -7,9 +7,15 @@
         <h5 class="card-title" style="color:#2E8B57;">{{user.name}}</h5>
         <p class="card-text" style="color:rgb(46, 113, 139);">{{user.introduction}}</p>
 
-        <h6>Tweets {{tweetCount}}</h6>
-        <h6>Following 32</h6>
-        <h6>Follower 32</h6>
+        <a href="/users/{{user.id}}/tweets">
+          <h6 class="tweet" style="color: black;">Tweet {{tweetCount}}</h6>
+        </a>
+        <a href="/users/{{user.id}}/followings">
+          <h6 class="following" style="color: black;">Following {{FollowingCount}}</h6>
+        </a>
+        <a href="/users/{{user.id}}/followers">
+          <h6 class="follower" style="color: black;">Follower 32</h6>
+        </a>
         <a href="/users/{{user.id}}/likes">
           <h6 class="like" style="color: black;">Like 32</h6>
         </a>

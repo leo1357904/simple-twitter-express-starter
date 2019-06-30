@@ -53,15 +53,15 @@ const userController = {
       ],
     }).then((user) => {
       const tweetCount = user.Tweets.length;
-      const FollowerCount = user.Followers.length;
-      const FollowingCount = user.Followings.length;
-      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      // const FollowerCount = user.Followers.length;
+      // const FollowingCount = user.Followings.length;
+      // const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
       res.render('user/user', {
         profile: user,
         tweetCount,
-        FollowerCount,
-        FollowingCount,
-        isFollowed,
+        // FollowerCount,
+        // FollowingCount,
+        // isFollowed,
       });
     });
   },
@@ -139,16 +139,48 @@ const userController = {
   getFollower: (req, res) => {
     User.findByPk(req.params.id, {
       include: [
+        { model: Tweet, include: [User] },
         { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' },
       ],
-    }).then((users) => {
-      const followerUsers = users.map((user => ({
-        ...user.dataValues,
-        FollowerCount: user.Followers.length,
-        isFollowed: req.user.Followings.map(d => d.id).includes(user.id),
-      })));
-      const sortUsers = followerUsers.sort({ createdAt: 'desc' });
-      res.render('user/follower', { sortUsers });
+    }).then((user) => {
+      const tweetCount = user.Tweets.length;
+      // const FollowerCount = user.Followers.length;
+      // const FollowingCount = user.Followings.length;
+      // const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      // const sortUsers = user.sort({ createdAt: 'desc' });
+      res.render('user/follower', {
+        user,
+        tweetCount,
+        // FollowerCount,
+        // FollowingCount,
+        // isFollowed,
+        // sortUsers,
+      });
+    });
+  },
+
+  getFollowing: (req, res) => {
+    User.findByPk(req.params.id, {
+      include: [
+        { model: Tweet, include: [User] },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' },
+      ],
+    }).then((user) => {
+      const tweetCount = user.Tweets.length;
+      // const FollowerCount = user.Followers.length;
+      // const FollowingCount = user.Followings.length;
+      // const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      // const sortUsers = user.sort({ createdAt: 'desc' });
+      res.render('user/following', {
+        user,
+        tweetCount,
+        // FollowerCount,
+        // FollowingCount,
+        // isFollowed,
+        // sortUsers,
+      });
     });
   },
 };
