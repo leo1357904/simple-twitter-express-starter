@@ -1,0 +1,32 @@
+<h1>Twister Back Stage</h1>
+
+<a href="/admin/tweets">Tweets</a> | 
+<a href="/admin/users">Users</a>
+
+<br/>
+<br/>
+
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">UserId</th>
+      <th scope="col">Name</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each tweets}}
+    <tr>
+      <th scope="row">{{this.id}}</th>
+      <th scope="row">{{this.UserId}}</th>
+      <td>{{this.description}}</td>
+      <td>
+        <form action="/admin/tweets/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-link">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
