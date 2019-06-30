@@ -50,13 +50,15 @@
 		          <p class="card-text">{{this.introduction}}</p>
 		          <div class="row">
 		          	<!-- <span class="badge badge-secondary">{{this.FollowerCount}}</span> -->
-					      <p>
-					        {{#if this.isFollowed }}
-					          <form action="/followships/{{this.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Unfollow</button></form>
-					        {{else}}
-					          <form action="/followships/{{this.id}}" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Follow</button></form>
-					        {{/if}}
-					      </p>
+		          	{{#ifCond this.id ../reqUId}}
+						      <p>
+						        {{#if this.isFollowed }}
+						          <form action="/followships/{{this.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Unfollow</button></form>
+						        {{else}}
+						          <form action="/followships/{{this.id}}" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Follow</button></form>
+						        {{/if}}
+						      </p>
+					      {{/ifCond}}
 		          </div>
 		        </div>
 		  		</div>
