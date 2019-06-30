@@ -44,7 +44,8 @@ const tweetController = {
 		      }))
 				  return res.render('tweets', { 
 				  	tweets: tweets,
-				  	users: users
+				  	users: users,
+				  	reqUId: req.user.id,
 				  })
 	      })
   	})
@@ -101,7 +102,8 @@ const tweetController = {
 	          followersCount: followersCount,
 	          followingsCount: followingsCount,
 	          likedTweetsCount: likedTweetsCount,
-	          isFollowed: isFollowed
+	          isFollowed: isFollowed,
+	          reqUId: req.user.id
 	        })
         })
       })
