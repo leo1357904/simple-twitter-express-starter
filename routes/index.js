@@ -51,6 +51,8 @@ module.exports = (app, passport) => {
   app.get('/users/:id/edit', userController.editUser);
   app.put('/users/:id/tweets', upload.single('avatar'), userController.putUser);
   app.get('/users/:id/likes', userController.getLike);
+  app.get('/users/:id/followers', userController.getFollower);
+  app.get('/users/:id/followings', userController.getFollowing);
 
 
   app.get('/admin', (req, res) => res.redirect('/admin/tweets'));
