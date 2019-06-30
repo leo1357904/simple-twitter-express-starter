@@ -6,11 +6,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Tweet.associate = function (models) { // eslint-disable-line
     Tweet.belongsTo(models.User);
-    Tweet.belongsToMany(models.User, {
-      through: models.Like,
-      foreignKey: 'TweetId',
-      as: 'LikeUsers',
-    });
   };
   return Tweet;
 };

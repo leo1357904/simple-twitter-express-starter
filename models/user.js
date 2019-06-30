@@ -10,11 +10,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   User.associate = function (models) { // eslint-disable-line
     User.hasMany(models.Tweet);
-    User.belongsToMany(models.Tweet, {
-      through: models.Like,
-      foreignKey: 'UserId',
-      as: 'LikeTweets',
-    });
     User.belongsToMany(User, {
       through: models.Followship,
       foreignKey: 'FollowingId',
