@@ -43,7 +43,7 @@
 	          <p class="card-text">{{tweet.description}}</p>
 
 	          <div class="row">
-	          	<a href="/tweets/{{tweet.id}}/replies" class="card-link">Reply({{repliesCount}})</a>
+	          	<a href="/tweets/{{tweet.id}}/replies" class="btn btn-link">Reply({{repliesCount}})</a>
 	          	<!-- <button type="button" class="btn btn-link" href="/tweets/:id/replies">Reply({{this.replyCount}})</button> -->
 		          {{#if isLiked }}
 	          		<form action="/tweets/{{tweet.id}}/unlike?_method=DELETE" method="POST"><button type="submit" class="btn btn-link" style="color:red;">unlike({{likedUsersCount}})</button></form>

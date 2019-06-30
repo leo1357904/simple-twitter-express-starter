@@ -130,7 +130,7 @@ const tweetController = {
       UserId: req.user.id,
       TweetId: req.params.id
     }).then((like) => {
-      return res.redirect('/back')
+      return res.redirect('back')
     })
   },
 
@@ -141,7 +141,7 @@ const tweetController = {
     }}).then((like) => {
       like.destroy()
       .then((like) => {
-        return res.redirect('/back')
+        return res.redirect('back')
       })
     })
   },
@@ -151,7 +151,7 @@ const tweetController = {
       followerId: req.user.id,
       followingId: req.params.id
     }).then((followship) => {
-      return res.redirect('/back')
+      return res.redirect('back')
     })
   },
 
@@ -162,7 +162,7 @@ const tweetController = {
     }}).then((followship) => {
       followship.destroy()
       .then((followship) => {
-        return res.redirect('/back')
+        return res.redirect('back')
       })
     })
   },
