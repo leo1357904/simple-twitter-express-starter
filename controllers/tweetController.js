@@ -59,6 +59,9 @@ const tweetController = {
 			}).then((tweet) => {
 			  res.redirect('/tweets')
 			})
+		} else {
+			req.flash('error_messages', 'segmentation fault! REBOOT ur computer and try again')
+      return res.redirect('/tweets')
 		}
 	},
 
@@ -105,13 +108,19 @@ const tweetController = {
 	},
 
 	postReply: (req, res) => {
-		return Reply.create({
-			UserId: req.user.id,
-			TweetId: req.body.tweetId,
-			comment: req.body.text,
-		}).then((reply) => {
-		  res.redirect(`/tweets/${req.body.tweetId}/replies`)
-		})
+		const textLength = req.body.text.length
+  	if (textLength !== 0) {
+			return Reply.create({
+				UserId: req.user.id,
+				TweetId: req.body.tweetId,
+				comment: req.body.text,
+			}).then((reply) => {
+			  res.redirect(`/tweets/${req.body.tweetId}/replies`)
+			})
+		} else {
+			req.flash('error_messages', 'segmentation fault! REBOOT ur computer and try again')
+      return res.redirect(`/tweets/${req.body.tweetId}/replies`)
+		}
 	},
 
 	addLike: (req, res) => {
@@ -119,7 +128,7 @@ const tweetController = {
       UserId: req.user.id,
       TweetId: req.params.id
     }).then((like) => {
-      return res.redirect('back')
+      return res.redirect('/back')
     })
   },
 
@@ -130,7 +139,7 @@ const tweetController = {
     }}).then((like) => {
       like.destroy()
       .then((like) => {
-        return res.redirect('back')
+        return res.redirect('/back')
       })
     })
   },
