@@ -15,7 +15,7 @@ const port = 3000;
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
 
 // setup handlebars
-app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
+app.engine('handlebars', handlebars({ defaultLayout: 'main', helpers: require('./config/handlebars-helpers') }));
 app.set('view engine', 'handlebars');
 
 // setup bodyParser for POST body

@@ -20,7 +20,7 @@
 		          <h5 class="card-title" style="color:blue;">{{this.User.name}}, {{moment this.createdAt}}</h5>
 		          <p class="card-text">{{this.description}}</p>
 		          <div class="row">
-		          	<a href="/tweets/{{this.id}}/replies" class="card-link">Reply({{this.replyCount}})</a>
+		          	<a href="/tweets/{{this.id}}/replies" class="btn btn-link">Reply({{this.replyCount}})</a>
 		          	<!-- <button type="button" class="btn btn-link" href="/tweets/:id/replies">Reply({{this.replyCount}})</button> -->
 			          {{#if this.isLiked }}
 		          		<form action="/tweets/{{this.id}}/unlike?_method=DELETE" method="POST"><button type="submit" class="btn btn-link" style="color:red;">unlike({{this.likeCount}})</button></form>
