@@ -33,7 +33,18 @@ module.exports = (app, passport) => {
   app.get('/', (req, res) => res.redirect('/tweets'));
   // 在 /tweets 底下則交給 tweetController.getTweets 來處理
   app.get('/tweets', authenticated, tweetController.getTweets);
+	app.post('/tweets', tweetController.postTweet)
 
+	app.get('/tweets/:id/replies', tweetController.getTweet)
+	app.post('/tweets/:id/replies', tweetController.postReply)	
+
+	app.post('/tweets/:id/like', tweetController.addLike)
+  app.delete('/tweets/:id/unlike', tweetController.removeLike)
+
+  app.post('/followships/:id', tweetController.addFollowing)
+  app.delete('/followships/:id', tweetController.removeFollowing)
+
+  
   app.get('/admin', (req, res) => res.redirect('/admin/tweets'));
   app.get('/admin/tweets', authenticatedAdmin, adminController.getTweets);
   app.delete('/admin/tweets/:id', authenticatedAdmin, adminController.deleteTweet);

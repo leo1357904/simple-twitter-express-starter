@@ -15,7 +15,7 @@ const port = 3000;
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
 
 // setup handlebars
-app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
+app.engine('handlebars', handlebars({ defaultLayout: 'main', helpers: require('./config/handlebars-helpers') }));
 app.set('view engine', 'handlebars');
 
 // setup bodyParser for POST body
@@ -45,6 +45,5 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
 
+require('./routes')(app, passport)
 module.exports = app;
-
-require('./routes')(app, passport);
