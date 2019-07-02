@@ -36,7 +36,7 @@
 
           <div class="col-md-10">
             <div class="tweets mt-3 ml-2">
-              <a href="/users/{{this.User.id}}/tweets">{{this.User.name}}, {{time this.createdAt}}</a>
+              <a href="/users/{{this.User.id}}/tweets">{{this.User.name}}, {{moment this.createdAt}}</a>
               <p>{{this.description}}</p>
               <div class="row">
                 <p class="ml-3" style="color:#6495ED;">Reply(2)</p>

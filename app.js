@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
+const dotenv = require('dotenv');
 const passport = require('./config/passport');
 const helpers = require('./_helpers');
 const db = require('./models');
