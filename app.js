@@ -4,12 +4,19 @@ const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
+const dotenv = require('dotenv');
 const passport = require('./config/passport');
 const helpers = require('./_helpers');
 const db = require('./models');
 
 const app = express();
 const port = 3000;
+
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
+
+app.use('/upload', express.static(__dirname + '/upload')); // eslint-disable-line
 
 // use helpers.getUser(req) to replace req.user
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
@@ -33,7 +40,7 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages');
   res.locals.error_messages = req.flash('error_messages');
-  res.locals.user = req.user;
+  res.locals.user = helpers.getUser(req);
   next();
 });
 
@@ -42,7 +49,7 @@ app.use(methodOverride('_method'));
 
 app.listen(port, () => {
   db.sequelize.sync(); // 跟資料庫同步
-  console.log(`Example app listening on port ${port}!`);
+  console.log(`Example app listening on port ${port}!`); // eslint-disable-line
 });
 
 require('./routes')(app, passport)
