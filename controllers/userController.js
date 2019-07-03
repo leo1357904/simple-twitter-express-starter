@@ -123,9 +123,31 @@ const userController = {
   },
 
   getLike: (req, res) => {
-    User.findByPk(req.params.id, { include: { model: Tweet, include: [User] } }).then((user) => {
+    User.findByPk(req.params.id, {
+      include: [
+        { model: Tweet, include: [User, Reply, Like] },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' },
+        { model: Tweet, as: 'LikedTweets', include: [User, Reply, Like] },
+      ],
+    }).then((user) => {
       const tweetCount = user.Tweets.length;
-      res.render('user/like', { user, tweetCount });
+      const FollowerCount = user.Followers.length;
+      const FollowingCount = user.Followings.length;
+      const LikedCount = user.LikedTweets.length;
+      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+
+
+      user.Tweets.sort((a, b) => b.createdAt - a.createdAt);
+      res.render('user/like', {
+        profile: user,
+        tweetCount,
+        FollowerCount,
+        FollowingCount,
+        isFollowed,
+        LikedCount,
+        // isLiked,
+      });
     });
   },
 
