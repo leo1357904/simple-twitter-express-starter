@@ -2,7 +2,14 @@ const bcrypt = require('bcrypt-nodejs');
 const imgur = require('imgur-node-api');
 const db = require('../models');
 
-const { User, Tweet, Followship } = db;
+const {
+  User,
+  Tweet,
+  Followship,
+  Reply,
+  Like,
+} = db;
+
 const { IMGUR_CLIENT_ID } = process.env;
 
 const userController = {
@@ -16,7 +23,7 @@ const userController = {
     }
 
     // confirm unique user
-    const user = await User.findOne({ where: { email: req.body.email }});
+    const user = await User.findOne({ where: { email: req.body.email } });
     if (user) {
       req.flash('error_messages', '信箱重複！');
       return res.redirect('/signup');
@@ -47,21 +54,29 @@ const userController = {
   getUser: (req, res) => {
     User.findByPk(req.params.id, {
       include: [
-        { model: Tweet, include: [User] },
+        { model: Tweet, include: [User, Reply, Like] },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' },
+        { model: Tweet, as: 'LikedTweets' },
       ],
     }).then((user) => {
       const tweetCount = user.Tweets.length;
-      // const FollowerCount = user.Followers.length;
-      // const FollowingCount = user.Followings.length;
-      // const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      const FollowerCount = user.Followers.length;
+      const FollowingCount = user.Followings.length;
+      const LikedCount = user.LikedTweets.length;
+      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+
+      // const isLiked = req.user.LikedTweets.map(d => d.id).includes(53);
+
+      user.Tweets.sort((a, b) => b.createdAt - a.createdAt);
       res.render('user/user', {
         profile: user,
         tweetCount,
-        // FollowerCount,
-        // FollowingCount,
-        // isFollowed,
+        FollowerCount,
+        FollowingCount,
+        isFollowed,
+        LikedCount,
+        // isLiked,
       });
     });
   },
