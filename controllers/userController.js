@@ -138,7 +138,7 @@ const userController = {
       const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
 
 
-      user.Tweets.sort((a, b) => b.createdAt - a.createdAt);
+      user.LikedTweets.sort((a, b) => b.createdAt - a.createdAt);
       res.render('user/like', {
         profile: user,
         tweetCount,
@@ -200,23 +200,24 @@ const userController = {
   getFollowing: (req, res) => {
     User.findByPk(req.params.id, {
       include: [
-        { model: Tweet, include: [User] },
+        { model: Tweet, include: [User, Reply, Like] },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' },
+        { model: Tweet, as: 'LikedTweets' },
       ],
     }).then((user) => {
       const tweetCount = user.Tweets.length;
-      // const FollowerCount = user.Followers.length;
-      // const FollowingCount = user.Followings.length;
-      // const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
-      // const sortUsers = user.sort({ createdAt: 'desc' });
+      const FollowerCount = user.Followers.length;
+      const FollowingCount = user.Followings.length;
+      const LikedCount = user.LikedTweets.length;
+
+      user.Followings.sort((a, b) => b.createdAt - a.createdAt);
       res.render('user/following', {
-        user,
+        profile: user,
         tweetCount,
-        // FollowerCount,
-        // FollowingCount,
-        // isFollowed,
-        // sortUsers,
+        FollowerCount,
+        FollowingCount,
+        LikedCount,
       });
     });
   },

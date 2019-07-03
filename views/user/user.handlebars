@@ -23,12 +23,12 @@
         <a href="/users/{{profile.id}}/edit" class="btn btn-primary mt-2">Edit Profile</a>
         {{else}}
         {{#if isFollowed }}
-        <form action="/users/{{profile.id}}/followings?_method=DELETE" method="POST" style="display: contents;">
-          <button type="submit" class="btn btn-danger ml-2 mt-2">Unfollow</button>
+        <form action="/followships/{{profile.id}}?_method=DELETE" method="POST" style="display: contents;">
+          <button type="submit" class="btn btn-primary">Unfollow</button>
         </form>
         {{else}}
-        <form action="/users/{{profile.id}}/followings" method="POST" style="display: contents;">
-          <button type="submit" class="btn btn-primary ml-2 mt-2">Follow</button>
+        <form action="/followships/{{profile.id}}" method="POST" style="display: contents;">
+          <button type="submit" class="btn btn-primary">Follow</button>
         </form>
         {{/if}}
         {{/ifMatch}}
