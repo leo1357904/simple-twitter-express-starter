@@ -1,4 +1,4 @@
-'use strict'; //eslint-disable-line
+'use strict'; // eslint-disable-line
 
 module.exports = (sequelize, DataTypes) => {
   const Tweet = sequelize.define('Tweet', {

@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const dotenv = require('dotenv');
 const passport = require('./config/passport');
 const helpers = require('./_helpers');
+const handlebarsHelpers = require('./config/handlebars-helpers');
 const db = require('./models');
 
 const app = express();
@@ -22,7 +23,7 @@ app.use('/upload', express.static(__dirname + '/upload')); // eslint-disable-lin
 // use helpers.ensureAuthenticated(req) to replace req.isAuthenticated()
 
 // setup handlebars
-app.engine('handlebars', handlebars({ defaultLayout: 'main', helpers: require('./config/handlebars-helpers') }));
+app.engine('handlebars', handlebars({ defaultLayout: 'main', helpers: handlebarsHelpers }));
 app.set('view engine', 'handlebars');
 
 // setup bodyParser for POST body
@@ -52,5 +53,6 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`); // eslint-disable-line
 });
 
-require('./routes')(app, passport)
+require('./routes')(app, passport);
+
 module.exports = app;
