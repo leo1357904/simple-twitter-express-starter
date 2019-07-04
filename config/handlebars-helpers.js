@@ -1,4 +1,4 @@
-const moment = require('moment')
+const moment = require('moment');
 
 module.exports = {
   ifCond: function (a, b, options) {
@@ -8,5 +8,13 @@ module.exports = {
 
   moment: function (a) {
     return moment(a).format('YYYY-MM-DD, hh:mm');
-  }
+  },
+
+  ifMatch: function (a, b, options) {
+    if (a === b) {
+      return options.fn(this)
+    } else {
+      return options.inverse(this)
+    }
+  },
 }

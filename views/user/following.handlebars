@@ -1,26 +1,37 @@
 <div class="card mb-3">
   <div class="row no-gutters">
     <div class="col-md-4 mt-2">
-      <img src="{{user.avatar}}" class="card-img" alt="avatar" style="width: 175px;margin-bottom: 5px;">
+      <img src="{{profile.avatar}}" class="card-img" alt="avatar" style="width: 175px;margin-bottom: 5px;">
 
       <div class="card-body">
-        <h5 class="card-title" style="color:#2E8B57;">{{user.name}}</h5>
-        <p class="card-text" style="color:rgb(46, 113, 139);">{{user.introduction}}</p>
+        <h5 class="card-title" style="color:#2E8B57;">{{profile.name}}</h5>
+        <p class="card-text" style="color:rgb(46, 113, 139);">{{profile.introduction}}</p>
 
-        <a href="/users/{{user.id}}/tweets">
+        <a href="/users/{{profile.id}}/tweets">
           <h6 class="tweet" style="color: black;">Tweet {{tweetCount}}</h6>
         </a>
-        <a href="/users/{{user.id}}/followings">
+        <a href="/users/{{profile.id}}/followings">
           <h6 class="following" style="color: black;">Following {{FollowingCount}}</h6>
         </a>
-        <a href="/users/{{user.id}}/followers">
-          <h6 class="follower" style="color: black;">Follower 32</h6>
+        <a href="/users/{{profile.id}}/followers">
+          <h6 class="follower" style="color: black;">Follower {{FollowerCount}}</h6>
         </a>
-        <a href="/users/{{user.id}}/likes">
-          <h6 class="like" style="color: black;">Like 32</h6>
+        <a href="/users/{{profile.id}}/likes">
+          <h6 class="like" style="color: black;">Like {{LikedCount}}</h6>
         </a>
-
-        <a href="/users/{{user.id}}/edit" class="btn btn-primary mt-2">Edit Profile</a>
+        {{#ifMatch profile.id user.id}}
+        <a href="/users/{{profile.id}}/edit" class="btn btn-primary mt-2">Edit Profile</a>
+        {{else}}
+        {{#if isFollowed }}
+        <form action="/followships/{{profile.id}}?_method=DELETE" method="POST" style="display: contents;">
+          <button type="submit" class="btn btn-primary">Unfollow</button>
+        </form>
+        {{else}}
+        <form action="/followships/{{profile.id}}" method="POST" style="display: contents;">
+          <button type="submit" class="btn btn-primary">Follow</button>
+        </form>
+        {{/if}}
+        {{/ifMatch}}
       </div>
     </div>
 
@@ -28,28 +39,31 @@
       <h1 class="followingTitle" style="color: #2E8B57;">Following</h1>
 
       <div class="row">
+        {{#each followings}}
         <div class="col-6 mt-3">
           <div class="card" style="border: solid 1px gray;">
             <div class="row">
               <div class="col-5 mt-2">
-                <img src="{{user.avatar}}" class="card-img ml-2" alt="avatar" style="width: 100px;margin-bottom: 25px;">
+                <img src="{{this.avatar}}" class="card-img ml-2" alt="avatar" style="width: 100px;margin-bottom: 25px;">
               </div>
 
               <div class="col-7 mt-1">
-                <a href="/users/{{user.id}}/tweets">{{user.name}}</a>
-                <p>{{user.introduction}}</p>
-                {{#if isFollowed }}
-                <form action="/users/{{user.id}}/followings?_method=DELETE" method="POST" style="display: contents;">
-                  <button type="submit" class="btn btn-danger ml-2 mt-2 mb-2">Unfollow</button>
-                </form>
+                <a href="/users/{{this.id}}/tweets">{{this.name}}</a>
+                <p>{{this.introduction}}</p>
+                {{#ifMatch this.id ../user.id}}
+                </br>
+                </br>
                 {{else}}
-                <form action="/users/{{user.id}}/followings" method="POST" style="display: contents;">
-                  <button type="submit" class="btn btn-primary ml-2 mt-2 mb-2">Follow</button>
+                <form action="/followships/{{this.id}}?_method=DELETE" method="POST" style="display: contents;">
+                  <button type="submit" class="btn btn-primary mb-2">Unfollow</button>
                 </form>
-                {{/if}}
+                {{/ifMatch}}
               </div>
             </div>
           </div>
         </div>
+        {{/each}}
       </div>
     </div>
+  </div>
+</div>
