@@ -1,6 +1,9 @@
 const bcrypt = require('bcrypt-nodejs');
 const imgur = require('imgur-node-api');
+const helpers = require('../_helpers');
+
 const db = require('../models');
+
 
 const {
   User,
@@ -32,7 +35,7 @@ const userController = {
     await User.create({
       name: req.body.name,
       email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
+      password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null),
     });
     req.flash('success_messages', '成功註冊帳號！');
     return res.redirect('/signin');
@@ -66,7 +69,7 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
 
-      // const isLiked = req.user.LikedTweets.map(d => d.id).includes(53);
+      const isLiked = req.user.LikedTweets.map(d => d.id).includes();
 
       user.Tweets.sort((a, b) => b.createdAt - a.createdAt);
       res.render('user/user', {
@@ -76,7 +79,7 @@ const userController = {
         FollowingCount,
         isFollowed,
         LikedCount,
-        // isLiked,
+        isLiked,
       });
     });
   },
@@ -177,22 +180,56 @@ const userController = {
     User.findByPk(req.params.id, {
       include: [
         { model: Tweet, include: [User] },
-        { model: User, as: 'Followers' },
+        { model: User, as: 'Followers', include: [{ model: User, as: 'Followers' }] },
         { model: User, as: 'Followings' },
+        { model: Tweet, as: 'LikedTweets' },
       ],
     }).then((user) => {
       const tweetCount = user.Tweets.length;
-      // const FollowerCount = user.Followers.length;
-      // const FollowingCount = user.Followings.length;
-      // const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
-      // const sortUsers = user.sort({ createdAt: 'desc' });
+      const FollowerCount = user.Followers.length;
+      const FollowingCount = user.Followings.length;
+      const LikedCount = user.LikedTweets.length;
+      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+
+      Followship.findOne({
+        where: {
+          followerId: req.user.id,
+          followingId: user.id,
+        },
+      }).then(followship => (followship ? followship.dataValues.id : ''));
+
+      const followers = [];
+
+      user.Followers.map((user) => {
+        followers.push({
+          ...user.dataValues,
+          introduction: user.introduction,
+          isFollowed: req.user.Followings.map(d => d.id).includes(user.id),
+          followshipId: Followship.findOne({
+            where: {
+              followerId: req.user.id,
+              followingId: user.id,
+            },
+          }).then(followship => (followship ? followship.dataValues.id : '')),
+          createdAt: Followship.findOne({
+            where: {
+              followerId: req.user.id,
+              followingId: user.id,
+            },
+          }).then(followship => followship.createdAt),
+        });
+      });
+
+      followers.sort((a, b) => b.createdAt - a.createdAt);
+
       res.render('user/follower', {
-        user,
+        profile: user,
         tweetCount,
-        // FollowerCount,
-        // FollowingCount,
-        // isFollowed,
-        // sortUsers,
+        FollowerCount,
+        FollowingCount,
+        LikedCount,
+        isFollowed,
+        followers,
       });
     });
   },
@@ -200,7 +237,7 @@ const userController = {
   getFollowing: (req, res) => {
     User.findByPk(req.params.id, {
       include: [
-        { model: Tweet, include: [User, Reply, Like] },
+        { model: Tweet, include: [User] },
         { model: User, as: 'Followers' },
         { model: User, as: 'Followings' },
         { model: Tweet, as: 'LikedTweets' },
@@ -210,6 +247,7 @@ const userController = {
       const FollowerCount = user.Followers.length;
       const FollowingCount = user.Followings.length;
       const LikedCount = user.LikedTweets.length;
+      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
 
       user.Followings.sort((a, b) => b.createdAt - a.createdAt);
       res.render('user/following', {
@@ -218,6 +256,7 @@ const userController = {
         FollowerCount,
         FollowingCount,
         LikedCount,
+        isFollowed,
       });
     });
   },
