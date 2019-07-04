@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt-nodejs');
 const imgur = require('imgur-node-api');
-const helpers = require('../_helpers');
+// const helpers = require('../_helpers');
 
 const db = require('../models');
 
@@ -69,9 +69,17 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
 
-      const isLiked = req.user.LikedTweets.map(d => d.id).includes();
+      const tweets = [];
 
-      user.Tweets.sort((a, b) => b.createdAt - a.createdAt);
+      user.Tweets.map((tweet) => { // eslint-disable-line
+        tweets.push({
+          ...tweet.dataValues,
+          isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+        });
+      });
+
+      tweets.sort((a, b) => b.createdAt - a.createdAt);
+
       res.render('user/user', {
         profile: user,
         tweetCount,
@@ -79,7 +87,7 @@ const userController = {
         FollowingCount,
         isFollowed,
         LikedCount,
-        isLiked,
+        tweets,
       });
     });
   },
@@ -140,8 +148,18 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
 
+      const likes = [];
 
-      user.LikedTweets.sort((a, b) => b.createdAt - a.createdAt);
+      user.LikedTweets.map((tweet) => { // eslint-disable-line
+        likes.push({
+          ...tweet.dataValues,
+          isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+          createdAt: tweet.Like.createdAt,
+        });
+      });
+
+      likes.sort((a, b) => b.createdAt - a.createdAt);
+
       res.render('user/like', {
         profile: user,
         tweetCount,
@@ -149,7 +167,7 @@ const userController = {
         FollowingCount,
         isFollowed,
         LikedCount,
-        // isLiked,
+        likes,
       });
     });
   },
@@ -200,17 +218,11 @@ const userController = {
 
       const followers = [];
 
-      user.Followers.map((user) => {
+      user.Followers.map((user) => { // eslint-disable-line
         followers.push({
           ...user.dataValues,
           introduction: user.introduction,
           isFollowed: req.user.Followings.map(d => d.id).includes(user.id),
-          followshipId: Followship.findOne({
-            where: {
-              followerId: req.user.id,
-              followingId: user.id,
-            },
-          }).then(followship => (followship ? followship.dataValues.id : '')),
           createdAt: Followship.findOne({
             where: {
               followerId: req.user.id,
@@ -239,7 +251,7 @@ const userController = {
       include: [
         { model: Tweet, include: [User] },
         { model: User, as: 'Followers' },
-        { model: User, as: 'Followings' },
+        { model: User, as: 'Followings', include: [{ model: User, as: 'Followers' }] },
         { model: Tweet, as: 'LikedTweets' },
       ],
     }).then((user) => {
@@ -249,7 +261,23 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
 
-      user.Followings.sort((a, b) => b.createdAt - a.createdAt);
+      const followings = [];
+
+      user.Followings.map((user) => { // eslint-disable-line
+        followings.push({
+          ...user.dataValues,
+          introduction: user.introduction,
+          createdAt: Followship.findOne({
+            where: {
+              followerId: req.user.id,
+              followingId: user.id,
+            },
+          }).then(followship => followship.createdAt),
+        });
+      });
+
+      followings.sort((a, b) => b.createdAt - a.createdAt);
+
       res.render('user/following', {
         profile: user,
         tweetCount,
@@ -257,6 +285,7 @@ const userController = {
         FollowingCount,
         LikedCount,
         isFollowed,
+        followings,
       });
     });
   },
