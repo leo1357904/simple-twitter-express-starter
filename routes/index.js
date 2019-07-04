@@ -36,24 +36,23 @@ module.exports = (app, passport) => {
   app.get('/', (req, res) => res.redirect('/tweets'));
   // 在 /tweets 底下則交給 tweetController.getTweets 來處理
   app.get('/tweets', authenticated, tweetController.getTweets);
-	app.post('/tweets', tweetController.postTweet)
+  app.post('/tweets', tweetController.postTweet);
 
-	app.get('/tweets/:id/replies', tweetController.getTweet)
-	app.post('/tweets/:id/replies', tweetController.postReply)	
+  app.get('/tweets/:id/replies', tweetController.getTweet);
+  app.post('/tweets/:id/replies', tweetController.postReply);
 
-	app.post('/tweets/:id/like', tweetController.addLike)
-  app.delete('/tweets/:id/unlike', tweetController.removeLike)
+  app.post('/tweets/:id/like', tweetController.addLike);
+  app.delete('/tweets/:id/unlike', tweetController.removeLike);
 
-  app.post('/followships/:id', tweetController.addFollowing)
-  app.delete('/followships/:id', tweetController.removeFollowing)
+  app.post('/followships/:id', tweetController.addFollowing);
+  app.delete('/followships/:id', tweetController.removeFollowing);
 
-  app.get('/users/:id/tweets', userController.getUser);
-  app.get('/users/:id/edit', userController.editUser);
-  app.put('/users/:id/tweets', upload.single('avatar'), userController.putUser);
-  app.get('/users/:id/likes', userController.getLike);
-  app.get('/users/:id/followers', userController.getFollower);
-  app.get('/users/:id/followings', userController.getFollowing);
-
+  app.get('/users/:id/tweets', authenticated, userController.getUser);
+  app.get('/users/:id/edit', authenticated, userController.editUser);
+  app.put('/users/:id/tweets', authenticated, upload.single('avatar'), userController.putUser);
+  app.get('/users/:id/likes', authenticated, userController.getLike);
+  app.get('/users/:id/followers', authenticated, userController.getFollower);
+  app.get('/users/:id/followings', authenticated, userController.getFollowing);
 
   app.get('/admin', (req, res) => res.redirect('/admin/tweets'));
   app.get('/admin/tweets', authenticatedAdmin, adminController.getTweets);

@@ -3,12 +3,12 @@ const LocalStrategy = require('passport-local');
 const bcrypt = require('bcrypt-nodejs');
 const db = require('../models');
 
-const { User } = db;
+const { User, Tweet } = db;
 
 // setup passport strategy
 passport.use(
   new LocalStrategy(
-  // customize user field
+    // customize user field
     {
       usernameField: 'email',
       passwordField: 'password',
@@ -35,8 +35,10 @@ passport.deserializeUser(async (id, cb) => {
     {
       include: [
         { model: User, as: 'Followings' },
+        { model: User, as: 'Followers' },
+        { model: Tweet, as: 'LikedTweets' },
       ],
-    }
+    },
   );
   user.role = Number(user.role); // 為了讓前端辨識admin身份，number 0才會是falsy
   return cb(null, user);
