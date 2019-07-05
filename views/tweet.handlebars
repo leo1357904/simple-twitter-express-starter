@@ -16,9 +16,14 @@
 		    {{#ifCond user.id reqUId}}
 			    <p>
 						{{#if isFollowed }}
-						  <form action="/followships/{{user.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Unfollow</button></form>
+						  <form action="/followships/{{user.id}}?_method=DELETE" method="POST" style="display: contents;">
+						  	<button type="submit" class="btn btn-primary">Unfollow</button>
+						  </form>
 						{{else}}
-						  <form action="/followships/{{user.id}}" method="POST" style="display: contents;"><button type="submit" class="btn btn-primary">Follow</button></form>
+						  <form action="/followships" method="POST" style="display: contents;">
+						  	<input type="hidden" name="userId" value="{{user.id}}"/>
+						  	<button type="submit" class="btn btn-primary">Follow</button>
+						  </form>
 						{{/if}}
 					</p>
 				{{/ifCond}}

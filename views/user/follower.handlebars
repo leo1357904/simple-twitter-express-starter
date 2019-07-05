@@ -27,7 +27,8 @@
           <button type="submit" class="btn btn-primary">Unfollow</button>
         </form>
         {{else}}
-        <form action="/followships/{{profile.id}}" method="POST" style="display: contents;">
+        <form action="/followships" method="POST" style="display: contents;">
+          <input type="hidden" name="userId" value="{{profile.id}}"/>
           <button type="submit" class="btn btn-primary">Follow</button>
         </form>
         {{/if}}
@@ -58,7 +59,8 @@
                   <button type="submit" class="btn btn-primary mb-2">Unfollow</button>
                 </form>
                 {{else}}
-                <form action="/followships/{{this.id}}" method="POST" style="display: contents;">
+                <form action="/followships" method="POST" style="display: contents;">
+                  <input type="hidden" name="userId" value="{{this.id}}"/>
                   <button type="submit" class="btn btn-primary mb-2">Follow</button>
                 </form>
                 {{/if}}
