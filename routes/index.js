@@ -44,7 +44,7 @@ module.exports = (app, passport) => {
   app.post('/tweets/:id/like', tweetController.addLike);
   app.delete('/tweets/:id/unlike', tweetController.removeLike);
 
-  app.post('/followships/:id', tweetController.addFollowing);
+  app.post('/followships', tweetController.addFollowing);
   app.delete('/followships/:id', tweetController.removeFollowing);
 
   app.get('/users/:id/tweets', authenticated, userController.getUser);
