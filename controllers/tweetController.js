@@ -149,7 +149,7 @@ const tweetController = {
   addFollowing: (req, res) => {
     return Followship.create({
       followerId: req.user.id,
-      followingId: req.params.id
+      followingId: req.body.userId
     }).then((followship) => {
       return res.redirect('back')
     })
