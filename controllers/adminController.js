@@ -21,7 +21,30 @@ const adminController = {
   },
 
   getUsers: async (req, res) => {
-    const users = await User.findAll();
+    const userData = await User.findAll(
+      {
+        include: [
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' },
+          {
+            model: Tweet,
+            include: [
+              { model: User, as: 'LikedUsers' },
+            ],
+          },
+        ],
+      },
+    );
+    const users = userData
+      .map(user => ({
+        ...user.dataValues,
+        followingCount: user.dataValues.Followings.length,
+        followerCount: user.dataValues.Followers.length,
+        tweetCount: user.dataValues.Tweets.length,
+        tweetLikeCount: user.dataValues.Tweets
+          .reduce((acc, tweet) => acc + tweet.LikedUsers.length, 0),
+      }))
+      .sort((a, b) => b.tweetCount - a.tweetCount);
     return res.render('admin/users', { users });
   },
 };

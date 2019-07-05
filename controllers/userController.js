@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt-nodejs');
 const imgur = require('imgur-node-api');
-// const helpers = require('../_helpers');
+const helpers = require('../_helpers');
 
 const db = require('../models');
 
@@ -67,14 +67,14 @@ const userController = {
       const FollowerCount = user.Followers.length;
       const FollowingCount = user.Followings.length;
       const LikedCount = user.LikedTweets.length;
-      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
       const tweets = [];
 
       user.Tweets.map((tweet) => { // eslint-disable-line
         tweets.push({
           ...tweet.dataValues,
-          isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+          isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
         });
       });
 
@@ -146,14 +146,14 @@ const userController = {
       const FollowerCount = user.Followers.length;
       const FollowingCount = user.Followings.length;
       const LikedCount = user.LikedTweets.length;
-      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
       const likes = [];
 
       user.LikedTweets.map((tweet) => { // eslint-disable-line
         likes.push({
           ...tweet.dataValues,
-          isLiked: req.user.LikedTweets.map(d => d.id).includes(tweet.id),
+          isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
           createdAt: tweet.Like.createdAt,
         });
       });
@@ -174,7 +174,7 @@ const userController = {
 
   addFollowing: (req, res) => {
     Followship.create({
-      FollowerId: req.user.id,
+      FollowerId: helpers.getUser(req).id,
       FollowingId: req.params.userId,
     }).then(() => {
       res.redirect('back');
@@ -184,7 +184,7 @@ const userController = {
   removeFollowing: (req, res) => {
     Followship.findOne({
       where: {
-        FollowerId: req.user.id,
+        FollowerId: helpers.getUser(req).id,
         FollowingId: req.params.userId,
       },
     }).then((followship) => {
@@ -207,11 +207,11 @@ const userController = {
       const FollowerCount = user.Followers.length;
       const FollowingCount = user.Followings.length;
       const LikedCount = user.LikedTweets.length;
-      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
       Followship.findOne({
         where: {
-          followerId: req.user.id,
+          followerId: helpers.getUser(req).id,
           followingId: user.id,
         },
       }).then(followship => (followship ? followship.dataValues.id : ''));
@@ -222,10 +222,10 @@ const userController = {
         followers.push({
           ...user.dataValues,
           introduction: user.introduction,
-          isFollowed: req.user.Followings.map(d => d.id).includes(user.id),
+          isFollowed: helpers.getUser(req).Followings.map(d => d.id).includes(user.id),
           createdAt: Followship.findOne({
             where: {
-              followerId: req.user.id,
+              followerId: helpers.getUser(req).id,
               followingId: user.id,
             },
           }).then(followship => followship.createdAt),
@@ -259,7 +259,7 @@ const userController = {
       const FollowerCount = user.Followers.length;
       const FollowingCount = user.Followings.length;
       const LikedCount = user.LikedTweets.length;
-      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id);
+      const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
       const followings = [];
 
@@ -269,7 +269,7 @@ const userController = {
           introduction: user.introduction,
           createdAt: Followship.findOne({
             where: {
-              followerId: req.user.id,
+              followerId: helpers.getUser(req).id,
               followingId: user.id,
             },
           }).then(followship => followship.createdAt),
