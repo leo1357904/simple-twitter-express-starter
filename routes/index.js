@@ -33,19 +33,19 @@ module.exports = (app, passport) => {
   app.get('/logout', userController.logout);
 
   // 如果使用者訪問首頁，就導向 /tweets 的頁面
-  app.get('/', (req, res) => res.redirect('/tweets'));
+  app.get('/', authenticated, (req, res) => res.redirect('/tweets'));
   // 在 /tweets 底下則交給 tweetController.getTweets 來處理
   app.get('/tweets', authenticated, tweetController.getTweets);
-  app.post('/tweets', tweetController.postTweet);
+  app.post('/tweets', authenticated, tweetController.postTweet);
 
-  app.get('/tweets/:id/replies', tweetController.getTweet);
-  app.post('/tweets/:id/replies', tweetController.postReply);
+  app.get('/tweets/:id/replies', authenticated, tweetController.getTweet);
+  app.post('/tweets/:id/replies', authenticated, tweetController.postReply);
 
-  app.post('/tweets/:id/like', tweetController.addLike);
-  app.delete('/tweets/:id/unlike', tweetController.removeLike);
+  app.post('/tweets/:id/like', authenticated, tweetController.addLike);
+  app.delete('/tweets/:id/unlike', authenticated, tweetController.removeLike);
 
-  app.post('/followships', tweetController.addFollowing);
-  app.delete('/followships/:id', tweetController.removeFollowing);
+  app.post('/followships', authenticated, tweetController.addFollowing);
+  app.delete('/followships/:id', authenticated, tweetController.removeFollowing);
 
   app.get('/users/:id/tweets', authenticated, userController.getUser);
   app.get('/users/:id/edit', authenticated, userController.editUser);
