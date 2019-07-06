@@ -154,11 +154,11 @@ const userController = {
         likes.push({
           ...tweet.dataValues,
           isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
-          createdAt: tweet.Like.createdAt,
+          likeCreatedAt: tweet.Like.createdAt,
         });
       });
 
-      likes.sort((a, b) => b.createdAt - a.createdAt);
+      likes.sort((a, b) => b.likeCreatedAt - a.likeCreatedAt);
 
       res.render('user/like', {
         profile: user,
@@ -209,13 +209,6 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
-      Followship.findOne({
-        where: {
-          followerId: helpers.getUser(req).id,
-          followingId: user.id,
-        },
-      }).then(followship => (followship ? followship.dataValues.id : ''));
-
       const followers = [];
 
       user.Followers.map((user) => { // eslint-disable-line
@@ -225,8 +218,8 @@ const userController = {
           isFollowed: helpers.getUser(req).Followings.map(d => d.id).includes(user.id),
           createdAt: Followship.findOne({
             where: {
-              followerId: helpers.getUser(req).id,
-              followingId: user.id,
+              followerId: user.id,
+              followingId: req.params.id,
             },
           }).then(followship => followship.createdAt),
         });
@@ -269,7 +262,7 @@ const userController = {
           introduction: user.introduction,
           createdAt: Followship.findOne({
             where: {
-              followerId: helpers.getUser(req).id,
+              followerId: req.params.id,
               followingId: user.id,
             },
           }).then(followship => followship.createdAt),
