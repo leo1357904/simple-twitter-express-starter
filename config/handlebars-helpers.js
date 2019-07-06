@@ -1,20 +1,21 @@
 const moment = require('moment');
 
 module.exports = {
-  ifCond: function (a, b, options) {
-    if (a !== b) { return options.fn(this) }
-    return options.inverse(this)
+  ifNotEqual: function (a, b, options) { // eslint-disable-line
+    if (a !== b) {
+      return options.fn(this);
+    }
+    return options.inverse(this);
   },
 
-  moment: function (a) {
+  moment: function (a) { // eslint-disable-line
     return moment(a).format('YYYY-MM-DD, hh:mm');
   },
 
-  ifMatch: function (a, b, options) {
+  ifMatch: function (a, b, options) { // eslint-disable-line
     if (a === b) {
-      return options.fn(this)
-    } else {
-      return options.inverse(this)
+      return options.fn(this);
     }
+    return options.inverse(this);
   },
-}
+};
