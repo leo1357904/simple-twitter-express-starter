@@ -35,6 +35,7 @@ describe('# reply request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
+            console.log('lol: ', err);
             if (err) return done(err);
             res.text.should.include('Tweet1 的 comment')
             return done();

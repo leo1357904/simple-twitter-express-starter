@@ -34,8 +34,8 @@ passport.deserializeUser(async (id, cb) => {
     id,
     {
       include: [
-        { model: User, as: 'Followings' },
-        { model: User, as: 'Followers' },
+        { model: User, as: 'Following' },
+        { model: User, as: 'Follower' },
         { model: Tweet, as: 'LikedTweets' },
       ],
     },

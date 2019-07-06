@@ -24,14 +24,14 @@ const tweetController = {
       .then((tweetData) => {
         User.findAll({
           include: [
-            { model: User, as: 'Followers' },
+            { model: User, as: 'Follower' },
           ],
         }).then((userData) => {
           const users = userData
             .map(user => ({
               ...user.dataValues,
-              FollowerCount: user.Followers.length,
-              isFollowed: helpers.getUser(req).Followings.map(d => d.id).includes(user.id),
+              FollowerCount: user.Follower.length,
+              isFollowed: helpers.getUser(req).Following.map(d => d.id).includes(user.id),
             }))
             .sort((a, b) => b.FollowerCount - a.FollowerCount)
             .slice(0, 10);
@@ -88,16 +88,17 @@ const tweetController = {
         User
           .findByPk(tweet.UserId, {
             include: [
-              { model: User, as: 'Followers' },
-              { model: User, as: 'Followings' },
+              { model: User, as: 'Follower' },
+              { model: User, as: 'Following' },
               { model: Tweet, as: 'LikedTweets' },
             ],
           })
           .then((user) => {
-            const followersCount = user.Followers.length;
-            const followingsCount = user.Followings.length;
+            const followersCount = user.Follower.length;
+            const followingsCount = user.Following.length;
             const likedTweetsCount = user.LikedTweets.length;
-            const isFollowed = user.Followers.map(d => d.id).includes(helpers.getUser(req).id);
+            const isFollowed = user.Follower.map(d => d.id).includes(helpers.getUser(req).id);
+            res.status(200);
             return res.render('tweet', {
               tweet,
               user,
