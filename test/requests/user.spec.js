@@ -18,7 +18,7 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({id: 1, Following: []});
+      ).returns({id: 1, Followings: [], LikedTweets: []});
 
       await db.User.destroy({where: {},truncate: true})
       await db.Tweet.destroy({where: {},truncate: true})
@@ -74,7 +74,7 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
           helpers, 'getUser'
-        ).returns({id: 1, Following: []});
+        ).returns({id: 1, Followings: []});
       await db.User.create({})
       await db.User.create({})
     })
@@ -118,14 +118,14 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({id: 1, Following: []});
+      ).returns({id: 1, Followings: []});
       await db.User.create({})
     })
 
     describe('successfully update', () => {
       it('will change users intro', (done) => {
         request(app)
-          .post('/users/1/edit')
+          .post('/users/1/edit?_method=PUT')
           .send('name=abc')
           .set('Accept', 'application/json')
           .expect(302)
@@ -155,7 +155,7 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({id: 1, Following: []});
+      ).returns({id: 1, Followings: []});
       await db.User.create({name: 'User1'})
       await db.User.create({name: 'User2'})
       await db.User.create({name: 'User3'})
@@ -167,8 +167,8 @@ describe('# user request', () => {
       await db.Followship.create({followerId: 3, followingId: 1})
     })
 
-    describe('go to following page', () => {
-      it('will show all following users', (done) => {
+    describe('go to followings page', () => {
+      it('will show all followings users', (done) => {
         request(app)
           .get('/users/1/followings')
           .set('Accept', 'application/json')
@@ -179,21 +179,21 @@ describe('# user request', () => {
             return done();
           });
       })
-      it('following list ordered by desc', (done) => {
+      it('followings list ordered by desc', (done) => {
         request(app)
           .get('/users/1/followings')
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
             if (err) return done(err);
-            res.text.indexOf('User2').should.above(res.text.indexOf('User3'))
+            res.text.indexOf('User3').should.above(res.text.indexOf('User2'))
             return done();
           });
       })
     })
 
-    describe('go to follower page', () => {
-      it('can see follower on other user page', (done) => {
+    describe('go to followers page', () => {
+      it('can see followers on other user page', (done) => {
         request(app)
           .get('/users/1/followers')
           .set('Accept', 'application/json')
@@ -204,14 +204,14 @@ describe('# user request', () => {
             return done();
           });
       })
-      it('follower list ordered by desc', (done) => {
+      it('followers list ordered by desc', (done) => {
         request(app)
           .get('/users/1/followings')
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
             if (err) return done(err);
-            res.text.indexOf('User2').should.above(res.text.indexOf('User3'))
+            res.text.indexOf('User3').should.above(res.text.indexOf('User2'))
             return done();
           });
       })
@@ -235,7 +235,7 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({id: 1, Following: []});
+      ).returns({id: 1, Followings: [], LikedTweets: []});
       await db.User.create({})
       await db.Tweet.create({UserId: 1, description: 'Tweet1'})
       await db.Like.create({UserId: 1, TweetId: 1})

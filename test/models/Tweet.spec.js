@@ -61,7 +61,7 @@ describe('# Tweet Model', () => {
     let data = null
 
     it('create', (done) => {
-      db.Tweet.create({}).then((tweet) => {   
+      db.Tweet.create({UserId: 1, description: 'hi'}).then((tweet) => {   
         data = tweet
         done()
       })

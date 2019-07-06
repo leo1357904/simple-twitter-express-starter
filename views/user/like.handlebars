@@ -28,7 +28,7 @@
         </form>
         {{else}}
         <form action="/followships" method="POST" style="display: contents;">
-          <input type="hidden" name="userId" value="{{profile.id}}"/>
+          <input type="hidden" name="id" value="{{profile.id}}"/>
           <button type="submit" class="btn btn-primary">Follow</button>
         </form>
         {{/if}}
@@ -53,7 +53,7 @@
               <div class="row">
                 <a href="/tweets/{{this.id}}/replies" class="btn btn-link">Reply({{this.Replies.length}})</a>
                 {{#if isLiked }}
-                <form action="/tweets/{{this.id}}/unlike?_method=DELETE" method="POST">
+                <form action="/tweets/{{this.id}}/unlike" method="POST">
                   <button type="submit" class="btn btn-link" style="color:red;">unlike({{this.Likes.length}})</button>
                 </form>
                 {{else}}

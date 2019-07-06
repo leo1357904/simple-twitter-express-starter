@@ -28,7 +28,7 @@
         </form>
         {{else}}
         <form action="/followships" method="POST" style="display: contents;">
-          <input type="hidden" name="userId" value="{{profile.id}}"/>
+          <input type="hidden" name="id" value="{{profile.id}}"/>
           <button type="submit" class="btn btn-primary">Follow</button>
         </form>
         {{/if}}
@@ -60,7 +60,7 @@
                 </form>
                 {{else}}
                 <form action="/followships" method="POST" style="display: contents;">
-                  <input type="hidden" name="userId" value="{{this.id}}"/>
+                  <input type="hidden" name="id" value="{{this.id}}"/>
                   <button type="submit" class="btn btn-primary mb-2">Follow</button>
                 </form>
                 {{/if}}

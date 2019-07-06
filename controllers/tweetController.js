@@ -37,7 +37,7 @@ const tweetController = {
             .slice(0, 10);
 
           const tweets = tweetData.map((tweet) => {
-            const { description } = tweet.dataValues;
+            const { description } = tweet;
             return {
               ...tweet.dataValues,
               description: description.length > 50
@@ -98,9 +98,10 @@ const tweetController = {
             const followingsCount = user.Followings.length;
             const likedTweetsCount = user.LikedTweets.length;
             const isFollowed = user.Followers.map(d => d.id).includes(helpers.getUser(req).id);
+            res.status(200);
             return res.render('tweet', {
               tweet,
-              user,
+              profile: user,
               likedUsersCount,
               repliesCount,
               tweetsCount,

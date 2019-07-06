@@ -34,7 +34,7 @@ describe('# tweet request', () => {
         ).returns(true);
         this.getUser = sinon.stub(
           helpers, 'getUser'
-        ).returns({id: 1, Following: []});
+        ).returns({id: 1, Followings: []});
         await db.User.create({})
         await db.Tweet.create({UserId: 1, description: 'User1 的 Tweet1'})
         await db.Tweet.create({UserId: 1, description: 'User1 的 Tweet2'})
@@ -72,13 +72,13 @@ describe('# tweet request', () => {
         ).returns(true);
         this.getUser = sinon.stub(
           helpers, 'getUser'
-        ).returns({id: 1, Following: []});
+        ).returns({id: 1, Followings: []});
         await db.User.create({})
       })
       it('will redirect to index', (done) => {
         request(app)
           .post('/tweets')
-          .send('description=description')
+          .send('text=description')
           .set('Accept', 'application/json')
           .expect(302)
           .end(function(err, res) {
@@ -110,7 +110,7 @@ describe('# tweet request', () => {
       it('will redirect index', (done) => {
         request(app)
           .post('/tweets')
-          .send('description=description')
+          .send('text=description')
           .set('Accept', 'application/json')
           .expect(302)
           .end(function(err, res) {
@@ -132,13 +132,13 @@ describe('# tweet request', () => {
         ).returns(true);
         this.getUser = sinon.stub(
           helpers, 'getUser'
-        ).returns({id: 1, Following: []});
+        ).returns({id: 1, Followings: []});
         await db.User.create({})
       })
       it('will redirect to index', (done) => {
         request(app)
           .post('/tweets')
-          .send('description=臣亮言：先帝創業未半，而中道崩殂。今天下三分，益州疲弊，此誠危急存亡之秋也。然侍衛之臣，不懈於內；忠志之士，忘身於外者，蓋追先帝之殊遇，欲報之於陛下也。誠宜開張聖聽，以光先帝遺德，恢弘志士之氣；不宜妄自菲薄，引喻失義，以塞忠諫之路也。宮中府中，俱為一體，陟罰臧否，不宜異同。若有作姦犯科，及為忠善者，宜付有司，論其刑賞，以昭陛下平明之治，不宜篇私，使內外異法也。')
+          .send('text=臣亮言：先帝創業未半，而中道崩殂。今天下三分，益州疲弊，此誠危急存亡之秋也。然侍衛之臣，不懈於內；忠志之士，忘身於外者，蓋追先帝之殊遇，欲報之於陛下也。誠宜開張聖聽，以光先帝遺德，恢弘志士之氣；不宜妄自菲薄，引喻失義，以塞忠諫之路也。宮中府中，俱為一體，陟罰臧否，不宜異同。若有作姦犯科，及為忠善者，宜付有司，論其刑賞，以昭陛下平明之治，不宜篇私，使內外異法也。')
           .set('Accept', 'application/json')
           .expect(302)
           .end(function(err, res) {
@@ -172,14 +172,14 @@ describe('# tweet request', () => {
         ).returns(true);
         this.getUser = sinon.stub(
           helpers, 'getUser'
-        ).returns({id: 1, Following: []});
+        ).returns({id: 1, Followings: []});
         await db.User.create({})
-        await db.Tweet.create({UserId: 1})
+        await db.Tweet.create({UserId: 1, description: ''})
       })
 
       it('will redirect index', (done) => {
          request(app)
-          .post('/tweets/1/likes')
+          .post('/tweets/1/like')
           .set('Accept', 'application/json')
           .expect(302)
           .end(function(err, res) {
@@ -214,9 +214,9 @@ describe('# tweet request', () => {
         ).returns(true);
         this.getUser = sinon.stub(
           helpers, 'getUser'
-        ).returns({id: 1, Following: []});
+        ).returns({id: 1, Followings: []});
         await db.User.create({})
-        await db.Tweet.create({UserId: 1})
+        await db.Tweet.create({UserId: 1, description: 'test'})
         await db.Like.create({UserId: 1, TweetId: 1})
       })
 

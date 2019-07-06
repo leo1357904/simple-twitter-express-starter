@@ -98,6 +98,9 @@ const userController = {
   },
 
   editUser: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res.redirect('/')
+    }
     User
       .findByPk(req.params.id)
       .then((user) => {
@@ -191,12 +194,17 @@ const userController = {
   },
 
   addFollowing: (req, res) => {
+    if (helpers.getUser(req).id === Number(req.body.id)) {
+      return res.send('cannot follow yourself!');
+    }
     return Followship
       .create({
         followerId: helpers.getUser(req).id,
-        followingId: req.body.userId,
+        followingId: req.body.id,
       })
-      .then(() => res.redirect('back'));
+      .then(() => {
+        res.redirect('back');
+      });
   },
 
   removeFollowing: (req, res) => {
@@ -274,22 +282,20 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
-      const followings = [];
-
-      user.Followings.map((user) => { // eslint-disable-line
-        followings.push({
-          ...user.dataValues,
-          introduction: user.introduction,
-          createdAt: Followship.findOne({
-            where: {
-              followerId: req.params.id,
-              followingId: user.id,
-            },
-          }).then(followship => followship.createdAt),
-        });
-      });
-
-      followings.sort((a, b) => b.createdAt - a.createdAt);
+      const followings = user.Followings
+        .map(following => ({
+          ...following.dataValues,
+          introduction: following.introduction,
+          createdAt: Followship
+            .findOne({
+              where: {
+                followerId: req.params.id,
+                followingId: following.id,
+              },
+            })
+            .then(followship => followship.createdAt),
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt);
 
       res.render('user/following', {
         profile: user,
