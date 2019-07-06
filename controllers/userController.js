@@ -19,16 +19,20 @@ const userController = {
   signUpPage: (req, res) => res.render('signup'),
 
   signUp: async (req, res) => {
-    // confirm password
-    if (req.body.passwordCheck !== req.body.password) {
-      req.flash('error_messages', '兩次密碼輸入不同！');
+    const userEmail = await User.findOne({ where: { email: req.body.email } });
+    if (userEmail) {
+      req.flash('error_messages', '信箱重複！');
       return res.redirect('/signup');
     }
 
-    // confirm unique user
-    const user = await User.findOne({ where: { email: req.body.email } });
-    if (user) {
-      req.flash('error_messages', '信箱重複！');
+    const userName = await User.findOne({ where: { name: req.body.name } });
+    if (userName) {
+      req.flash('error_messages', '使用者名稱重複！');
+      return res.redirect('/signup');
+    }
+
+    if (req.body.passwordCheck !== req.body.password) {
+      req.flash('error_messages', '兩次密碼輸入不同！');
       return res.redirect('/signup');
     }
 
@@ -36,6 +40,9 @@ const userController = {
       name: req.body.name,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null),
+      role: 0,
+      avatar: 'https://i.imgur.com/Uzs2ty3.jpg',
+      introduction: '',
     });
     req.flash('success_messages', '成功註冊帳號！');
     return res.redirect('/signin');
@@ -55,143 +62,158 @@ const userController = {
   },
 
   getUser: (req, res) => {
-    User.findByPk(req.params.id, {
-      include: [
-        { model: Tweet, include: [User, Reply, Like] },
-        { model: User, as: 'Followers' },
-        { model: User, as: 'Followings' },
-        { model: Tweet, as: 'LikedTweets' },
-      ],
-    }).then((user) => {
-      const tweetCount = user.Tweets.length;
-      const FollowerCount = user.Followers.length;
-      const FollowingCount = user.Followings.length;
-      const LikedCount = user.LikedTweets.length;
-      const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
+    User
+      .findByPk(req.params.id, {
+        include: [
+          { model: Tweet, include: [User, Reply, Like] },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' },
+          { model: Tweet, as: 'LikedTweets' },
+        ],
+      })
+      .then((user) => {
+        const tweetCount = user.Tweets.length;
+        const FollowerCount = user.Followers.length;
+        const FollowingCount = user.Followings.length;
+        const LikedCount = user.LikedTweets.length;
+        const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
-      const tweets = [];
+        const tweets = user.Tweets
+          .map(tweet => ({
+            ...tweet.dataValues,
+            isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
+          }))
+          .sort((a, b) => b.createdAt - a.createdAt);
 
-      user.Tweets.map((tweet) => { // eslint-disable-line
-        tweets.push({
-          ...tweet.dataValues,
-          isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
+        res.render('user/user', {
+          profile: user,
+          tweetCount,
+          FollowerCount,
+          FollowingCount,
+          isFollowed,
+          LikedCount,
+          tweets,
         });
       });
-
-      tweets.sort((a, b) => b.createdAt - a.createdAt);
-
-      res.render('user/user', {
-        profile: user,
-        tweetCount,
-        FollowerCount,
-        FollowingCount,
-        isFollowed,
-        LikedCount,
-        tweets,
-      });
-    });
   },
 
   editUser: (req, res) => {
-    User.findByPk(req.params.id).then((user) => {
-      res.render('user/edit', { user });
-    });
+    User
+      .findByPk(req.params.id)
+      .then((user) => {
+        res.render('user/edit', { user });
+      });
   },
 
-  putUser: (req, res) => {
+  putUser: async (req, res) => {
     if (!req.body.name) {
       req.flash('error_messages', '用戶名稱未填寫');
-      res.redirect('back');
+      return res.redirect('back');
+    }
+
+    const userName = await User.findOne({ where: { name: req.body.name } });
+    if (userName) {
+      req.flash('error_messages', '用戶名稱重複');
+      return res.redirect('back');
+    }
+    const { file } = req;
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID);
+      imgur.upload(file.path, (err, img) => {
+        User
+          .findByPk(req.params.id)
+          .then((user) => {
+            user
+              .update({
+                name: req.body.name,
+                introduction: req.body.introduction,
+                avatar: file ? img.data.link : user.avatar,
+              })
+              .then(() => {
+                req.flash('success_messages', '個人資料修改成功');
+                res.redirect(`/users/${req.params.id}/tweets`);
+              });
+          });
+      });
     } else {
-      const { file } = req;
-      if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID);
-        imgur.upload(file.path, (err, img) => {
-          User.findByPk(req.params.id).then((user) => {
-            user.update({
+      User
+        .findByPk(req.params.id)
+        .then((user) => {
+          user
+            .update({
               name: req.body.name,
               introduction: req.body.introduction,
-              avatar: file ? img.data.link : user.avatar,
-            }).then(() => {
+              avatar: user.avatar,
+            })
+            .then(() => {
               req.flash('success_messages', '個人資料修改成功');
               res.redirect(`/users/${req.params.id}/tweets`);
             });
-          });
         });
-      } else {
-        User.findByPk(req.params.id).then((user) => {
-          user.update({
-            name: req.body.name,
-            introduction: req.body.introduction,
-            avatar: user.avatar,
-          }).then(() => {
-            req.flash('success_messages', '個人資料修改成功');
-            res.redirect(`/users/${req.params.id}/tweets`);
-          });
-        });
-      }
     }
   },
 
   getLike: (req, res) => {
-    User.findByPk(req.params.id, {
-      include: [
-        { model: Tweet, include: [User, Reply, Like] },
-        { model: User, as: 'Followers' },
-        { model: User, as: 'Followings' },
-        { model: Tweet, as: 'LikedTweets', include: [User, Reply, Like] },
-      ],
-    }).then((user) => {
-      const tweetCount = user.Tweets.length;
-      const FollowerCount = user.Followers.length;
-      const FollowingCount = user.Followings.length;
-      const LikedCount = user.LikedTweets.length;
-      const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
+    User
+      .findByPk(req.params.id, {
+        include: [
+          { model: Tweet, include: [User, Reply, Like] },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' },
+          { model: Tweet, as: 'LikedTweets', include: [User, Reply, Like] },
+        ],
+      })
+      .then((user) => {
+        const tweetCount = user.Tweets.length;
+        const FollowerCount = user.Followers.length;
+        const FollowingCount = user.Followings.length;
+        const LikedCount = user.LikedTweets.length;
+        const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
-      const likes = [];
+        const likes = user.LikedTweets
+          .map(tweet => ({
+            ...tweet.dataValues,
+            isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
+            likeCreatedAt: tweet.Like.createdAt,
+          }))
+          .sort((a, b) => b.likeCreatedAt - a.likeCreatedAt);
 
-      user.LikedTweets.map((tweet) => { // eslint-disable-line
-        likes.push({
-          ...tweet.dataValues,
-          isLiked: helpers.getUser(req).LikedTweets.map(d => d.id).includes(tweet.id),
-          likeCreatedAt: tweet.Like.createdAt,
+        res.render('user/like', {
+          profile: user,
+          tweetCount,
+          FollowerCount,
+          FollowingCount,
+          isFollowed,
+          LikedCount,
+          likes,
         });
       });
-
-      likes.sort((a, b) => b.likeCreatedAt - a.likeCreatedAt);
-
-      res.render('user/like', {
-        profile: user,
-        tweetCount,
-        FollowerCount,
-        FollowingCount,
-        isFollowed,
-        LikedCount,
-        likes,
-      });
-    });
   },
 
   addFollowing: (req, res) => {
-    Followship.create({
-      FollowerId: helpers.getUser(req).id,
-      FollowingId: req.params.userId,
-    }).then(() => {
-      res.redirect('back');
-    });
+    return Followship
+      .create({
+        followerId: helpers.getUser(req).id,
+        followingId: req.body.userId,
+      })
+      .then(() => res.redirect('back'));
   },
 
   removeFollowing: (req, res) => {
-    Followship.findOne({
-      where: {
-        FollowerId: helpers.getUser(req).id,
-        FollowingId: req.params.userId,
-      },
-    }).then((followship) => {
-      followship.destroy().then(() => {
-        res.redirect('back');
+    return Followship
+      .findOne(
+        {
+          where: {
+            FollowerId: helpers.getUser(req).id,
+            FollowingId: req.params.id,
+          },
+        },
+      )
+      .then((followship) => {
+        followship
+          .destroy()
+          .then(() => res.redirect('back'));
       });
-    });
   },
 
   getFollower: (req, res) => {
@@ -209,23 +231,21 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
-      const followers = [];
-
-      user.Followers.map((user) => { // eslint-disable-line
-        followers.push({
-          ...user.dataValues,
-          introduction: user.introduction,
-          isFollowed: helpers.getUser(req).Followings.map(d => d.id).includes(user.id),
-          createdAt: Followship.findOne({
-            where: {
-              followerId: user.id,
-              followingId: req.params.id,
-            },
-          }).then(followship => followship.createdAt),
-        });
-      });
-
-      followers.sort((a, b) => b.createdAt - a.createdAt);
+      const followers = user.Followers
+        .map(follower => ({
+          ...follower.dataValues,
+          introduction: follower.introduction,
+          isFollowed: helpers.getUser(req).Followings.map(d => d.id).includes(follower.id),
+          createdAt: Followship
+            .findOne({
+              where: {
+                followerId: follower.id,
+                followingId: req.params.id,
+              },
+            })
+            .then(followship => followship.createdAt),
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt);
 
       res.render('user/follower', {
         profile: user,

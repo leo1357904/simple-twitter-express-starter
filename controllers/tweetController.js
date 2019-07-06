@@ -6,7 +6,6 @@ const {
   User,
   Reply,
   Like,
-  Followship,
 } = db;
 
 const tweetController = {
@@ -37,13 +36,18 @@ const tweetController = {
             .sort((a, b) => b.FollowerCount - a.FollowerCount)
             .slice(0, 10);
 
-          const tweets = tweetData.map(tweet => ({
-            ...tweet.dataValues,
-            description: tweet.dataValues.description.substring(0, 50),
-            replyCount: tweet.Replies.length,
-            likeCount: tweet.LikedUsers.length,
-            isLiked: tweet.LikedUsers.map(d => d.id).includes(helpers.getUser(req).id),
-          }));
+          const tweets = tweetData.map((tweet) => {
+            const { description } = tweet.dataValues;
+            return {
+              ...tweet.dataValues,
+              description: description.length > 50
+                ? `${description.substring(0, 50)} ...`
+                : description,
+              replyCount: tweet.Replies.length,
+              likeCount: tweet.LikedUsers.length,
+              isLiked: tweet.LikedUsers.map(d => d.id).includes(helpers.getUser(req).id),
+            };
+          });
           return res.render('tweets', {
             tweets,
             users,
@@ -55,21 +59,21 @@ const tweetController = {
 
   postTweet: (req, res) => {
     const textLength = req.body.text.length;
-    if ((textLength > 0) && (textLength < 140)) {
-      return Tweet
-        .create({
-          UserId: helpers.getUser(req).id,
-          description: req.body.text,
-        })
-        .then(() => res.redirect('/tweets'));
+    if ((textLength === 0) || (textLength >= 140)) {
+      req.flash('error_messages', 'Tweet should not be empty or more than 139 letters');
+      return res.redirect('/tweets');
     }
-    req.flash('error_messages', 'segmentation fault! REBOOT ur computer and try again');
-    return res.redirect('/tweets');
+    return Tweet
+      .create({
+        UserId: helpers.getUser(req).id,
+        description: req.body.text,
+      })
+      .then(() => res.redirect('/tweets'));
   },
 
-  getTweet: (req, res) => {
+  getReplies: (req, res) => {
     return Tweet
-      .findByPk(req.params.id, {
+      .findByPk(req.params.tweet_id, {
         include: [
           { model: Reply, include: [User] },
           { model: User, as: 'LikedUsers' },
@@ -112,18 +116,19 @@ const tweetController = {
   },
 
   postReply: (req, res) => {
+    const tweetId = req.params.tweet_id;
     const textLength = req.body.text.length;
-    if (textLength !== 0) {
-      return Reply
-        .create({
-          UserId: helpers.getUser(req).id,
-          TweetId: req.body.tweetId,
-          comment: req.body.text,
-        })
-        .then(() => res.redirect(`/tweets/${req.body.tweetId}/replies`));
+    if (textLength === 0) {
+      req.flash('error_messages', 'Reply should not be empty');
+      return res.redirect(`/tweets/${tweetId}/replies`);
     }
-    req.flash('error_messages', 'segmentation fault! REBOOT ur computer and try again');
-    return res.redirect(`/tweets/${req.body.tweetId}/replies`);
+    return Reply
+      .create({
+        UserId: helpers.getUser(req).id,
+        TweetId: tweetId,
+        comment: req.body.text,
+      })
+      .then(() => res.redirect(`/tweets/${tweetId}/replies`));
   },
 
   addLike: (req, res) => {
@@ -150,39 +155,6 @@ const tweetController = {
           .destroy()
           .then(() => res.redirect('back'));
       });
-  },
-
-  addFollowing: (req, res) => {
-    return Followship
-      .create({
-        followerId: helpers.getUser(req).id,
-        followingId: req.body.userId,
-      }).then(() => res.redirect('back'));
-  },
-
-  removeFollowing: (req, res) => {
-    return Followship
-      .findOne(
-        {
-          where: {
-            followerId: helpers.getUser(req).id,
-            followingId: req.params.id,
-          },
-        },
-      )
-      .then((followship) => {
-        followship
-          .destroy()
-          .then(() => res.redirect('back'));
-      });
-  },
-
-  signInPage: (req, res) => {
-    res.render('signin');
-  },
-
-  signIn: (req, res) => {
-    res.redirect('/tweets');
   },
 };
 

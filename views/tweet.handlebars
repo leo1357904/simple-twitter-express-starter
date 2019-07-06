@@ -13,7 +13,7 @@
 		    <h5 class="card-title">Follower {{followersCount}}</h5>
 		    <h5 class="card-title">Like {{likedTweetsCount}}</h5>
 
-		    {{#ifCond user.id reqUId}}
+		    {{#ifNotEqual user.id reqUId}}
 			    <p>
 						{{#if isFollowed }}
 						  <form action="/followships/{{user.id}}?_method=DELETE" method="POST" style="display: contents;">
@@ -26,7 +26,7 @@
 						  </form>
 						{{/if}}
 					</p>
-				{{/ifCond}}
+				{{/ifNotEqual}}
 		  </div>
 		</div>
 		
@@ -42,14 +42,12 @@
 				<div class="col-md-8">
 	        <div class="card-body">
 
-	          <!-- <h5 class="card-title" style="color:blue;">{{user.name}}, {{moment tweet.createdAt}}</h5> -->
 	          <a href="/users/{{user.id}}/tweets" class="card-link" style="font-size:21px; color: blue">{{user.name}}, {{moment tweet.createdAt}}</a>
 
 	          <p class="card-text">{{tweet.description}}</p>
 
 	          <div class="row">
 	          	<a href="/tweets/{{tweet.id}}/replies" class="btn btn-link">Reply({{repliesCount}})</a>
-	          	<!-- <button type="button" class="btn btn-link" href="/tweets/:id/replies">Reply({{this.replyCount}})</button> -->
 		          {{#if isLiked }}
 	          		<form action="/tweets/{{tweet.id}}/unlike?_method=DELETE" method="POST"><button type="submit" class="btn btn-link" style="color:red;">unlike({{likedUsersCount}})</button></form>
 	        		{{else}}
@@ -83,7 +81,6 @@
 		  <div class="form-group">
 		    <textarea class="form-control" id="text" name="text" rows="3" placeholder=""></textarea>
 		  </div>
-		  <input type="hidden" name="tweetId" value="{{tweet.id}}"/>
 		  <button type="submit" class="btn btn-primary float-right">Reply</button>
 		</form>
 	</div>
