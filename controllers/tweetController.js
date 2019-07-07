@@ -37,7 +37,7 @@ const tweetController = {
             .slice(0, 10);
 
           const tweets = tweetData.map((tweet) => {
-            const { description } = tweet.dataValues;
+            const { description } = tweet;
             return {
               ...tweet.dataValues,
               description: description.length > 50

@@ -98,6 +98,9 @@ const userController = {
   },
 
   editUser: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res.redirect('/');
+    }
     User
       .findByPk(req.params.id)
       .then((user) => {
@@ -191,10 +194,14 @@ const userController = {
   },
 
   addFollowing: (req, res) => {
+    if (helpers.getUser(req).id === Number(req.body.id)) {
+      return res.send('cannot follow yourself!');
+    }
+    console.log(req.body.id)
     return Followship
       .create({
         followerId: helpers.getUser(req).id,
-        followingId: req.body.userId,
+        followingId: req.body.id,
       })
       .then(() => res.redirect('back'));
   },
@@ -245,7 +252,7 @@ const userController = {
             })
             .then(followship => followship.createdAt),
         }))
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .sort((a, b) => b.createdAt - a.createdAt).reverse();
 
       res.render('user/follower', {
         profile: user,
@@ -274,22 +281,20 @@ const userController = {
       const LikedCount = user.LikedTweets.length;
       const isFollowed = helpers.getUser(req).Followings.map(d => d.id).includes(user.id);
 
-      const followings = [];
-
-      user.Followings.map((user) => { // eslint-disable-line
-        followings.push({
-          ...user.dataValues,
-          introduction: user.introduction,
-          createdAt: Followship.findOne({
-            where: {
-              followerId: req.params.id,
-              followingId: user.id,
-            },
-          }).then(followship => followship.createdAt),
-        });
-      });
-
-      followings.sort((a, b) => b.createdAt - a.createdAt);
+      const followings = user.Followings
+        .map(following => ({
+          ...following.dataValues,
+          introduction: following.introduction,
+          createdAt: Followship
+            .findOne({
+              where: {
+                followerId: req.params.id,
+                followingId: user.id,
+              },
+            })
+            .then(followship => followship.createdAt),
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt).reverse();
 
       res.render('user/following', {
         profile: user,
