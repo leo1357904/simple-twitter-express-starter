@@ -204,8 +204,8 @@ const userController = {
       .findOne(
         {
           where: {
-            FollowerId: helpers.getUser(req).id,
-            FollowingId: req.params.id,
+            followerId: helpers.getUser(req).id,
+            followingId: req.params.id,
           },
         },
       )
