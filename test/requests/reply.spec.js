@@ -35,7 +35,6 @@ describe('# reply request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
-            console.log('lol: ', err);
             if (err) return done(err);
             res.text.should.include('Tweet1 的 comment')
             return done();
@@ -70,6 +69,7 @@ describe('# reply request', () => {
       it('will redirect to index', (done) => {
         request(app)
           .post('/tweets/1/replies')
+          .send('text=test')
           .set('Accept', 'application/json')
           .expect(302)
           .end(function(err, res) {

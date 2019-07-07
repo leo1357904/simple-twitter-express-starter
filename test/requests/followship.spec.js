@@ -31,11 +31,15 @@ describe('# followship request', () => {
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
+            console.log(err);
+            
             if (err) return done(err);
             db.User.findByPk(1,{include: [
                 { model: db.User, as: 'Follower' },
                 { model: db.User, as: 'Following' } 
               ]}).then(user => {
+              console.log(user.Following);
+                
               user.Following.length.should.equal(0)
               return done();
             })

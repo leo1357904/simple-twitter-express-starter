@@ -18,7 +18,7 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({id: 1, Following: []});
+      ).returns({id: 1, Following: [], Following: [], LikedTweets: []});
 
       await db.User.destroy({where: {},truncate: true})
       await db.Tweet.destroy({where: {},truncate: true})
@@ -125,7 +125,7 @@ describe('# user request', () => {
     describe('successfully update', () => {
       it('will change users intro', (done) => {
         request(app)
-          .post('/users/1/edit')
+          .post('/users/1/edit?_method=PUT')
           .send('name=abc')
           .set('Accept', 'application/json')
           .expect(302)
@@ -235,7 +235,7 @@ describe('# user request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({id: 1, Following: []});
+      ).returns({id: 1, Following: [], LikedTweets: []});
       await db.User.create({})
       await db.Tweet.create({UserId: 1, description: 'Tweet1'})
       await db.Like.create({UserId: 1, TweetId: 1})

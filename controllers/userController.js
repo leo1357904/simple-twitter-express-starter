@@ -98,6 +98,9 @@ const userController = {
   },
 
   editUser: (req, res) => {
+    if (helpers.getUser(req).id !== Number(req.params.id)) {
+      return res.redirect('/')
+    }
     User
       .findByPk(req.params.id)
       .then((user) => {
@@ -191,10 +194,14 @@ const userController = {
   },
 
   addFollowing: (req, res) => {
+    console.log(helpers.getUser(req).id, Number(req.body.id), helpers.getUser(req).id === Number(req.body.id));
+    if (helpers.getUser(req).id === Number(req.body.id)) {
+      return res.send('cannot follow yourself!')
+    }
     return Followship
       .create({
         followerId: helpers.getUser(req).id,
-        followingId: req.body.userId,
+        followingId: req.body.id,
       })
       .then(() => {
         res.status(200);
@@ -248,7 +255,7 @@ const userController = {
             })
             .then(followship => followship.createdAt),
         }))
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .sort((a, b) => b.createdAt - a.createdAt).reverse();
 
       res.render('user/follower', {
         profile: user,
@@ -290,7 +297,7 @@ const userController = {
             })
             .then(followship => followship.createdAt),
         }))
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .sort((a, b) => b.createdAt - a.createdAt).reverse();
 
       res.render('user/following', {
         profile: user,
