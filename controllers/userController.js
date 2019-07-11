@@ -99,7 +99,7 @@ const userController = {
 
   editUser: (req, res) => {
     if (helpers.getUser(req).id !== Number(req.params.id)) {
-      return res.redirect('/')
+      return res.redirect('/');
     }
     User
       .findByPk(req.params.id)
@@ -115,10 +115,11 @@ const userController = {
     }
 
     const userName = await User.findOne({ where: { name: req.body.name } });
-    if (userName) {
+    if (userName && userName.id !== helpers.getUser(req).id) {
       req.flash('error_messages', '用戶名稱重複');
       return res.redirect('back');
     }
+
     const { file } = req;
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID);
@@ -200,7 +201,7 @@ const userController = {
     return Followship
       .create({
         followerId: helpers.getUser(req).id,
-        followingId: req.body.id,
+        followingId: Number(req.body.id),
       })
       .then(() => {
         res.redirect('back');
