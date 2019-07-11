@@ -12,6 +12,10 @@
       <th scope="col">#</th>
       <th scope="col">UserId</th>
       <th scope="col">Name</th>
+      <th scope="col">Tweet Comment</th>
+      <th scope="col">Date</th>
+      <th scope="col">#</th>
+      <th scope="col">#</th>
       <th scope="col">#</th>
     </tr>
   </thead>
@@ -19,8 +23,24 @@
     {{#each tweets}}
     <tr>
       <th scope="row">{{this.id}}</th>
-      <th scope="row">{{this.UserId}}</th>
+      <th scope="row">{{this.User.id}}</th>
+      <th scope="row">
+        <a href="/users/{{this.User.id}}/tweets" class="text-primary font-weight-bolder">
+          @{{this.User.name}}
+        </a>
+      </th>
       <td>{{this.description}}</td>
+      <td>{{moment this.createdAt}}</td>
+      <td>
+        <a class="col-6 col-md-3 text-info font-weight-bolder" href="/tweets/{{this.id}}/replies">
+          Reply({{this.Replies.length}})
+        </a>
+      </td>
+      <td>
+        <div class="col-6 col-md-3 text-danger font-weight-bolder">
+          Like({{this.LikedUsers.length}})
+        </div>
+      </td>
       <td>
         <form action="/admin/tweets/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
           <button type="submit" class="btn btn-link">Delete</button>

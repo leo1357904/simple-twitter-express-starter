@@ -1,15 +1,28 @@
 const db = require('../models');
 
-const { Tweet, User } = db;
+const { Tweet, User, Reply } = db;
 
 const adminController = {
   getTweets: async (req, res) => {
-    const tweets = await Tweet.findAll();
+    const tweets = await Tweet.findAll({
+      include: [
+        User,
+        Reply,
+        { model: User, as: 'LikedUsers' },
+      ],
+    });
 
-    const shortTweets = tweets.map(tweet => ({
-      ...tweet.dataValues,
-      description: tweet.dataValues.description.substring(0, 50),
-    }));
+    const shortTweets = tweets.map((tweet) => {
+      const dLength = tweet.dataValues.description.length;
+      const description = dLength < 50
+        ? tweet.dataValues.description
+        : `${tweet.dataValues.description.substring(0, 50)} ...`;
+      return {
+        ...tweet.dataValues,
+        description,
+        createdAt: tweet.createdAt.toDateString(),
+      };
+    });
 
     return res.render('admin/tweets', { tweets: shortTweets });
   },
