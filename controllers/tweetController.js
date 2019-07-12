@@ -136,26 +136,20 @@ const tweetController = {
     return Like
       .create({
         UserId: helpers.getUser(req).id,
-        TweetId: req.params.id,
+        TweetId: Number(req.params.id),
       })
       .then(() => res.redirect('back'));
   },
 
   removeLike: (req, res) => {
     return Like
-      .findOne(
-        {
-          where: {
-            UserId: helpers.getUser(req).id,
-            TweetId: req.params.id,
-          },
+      .destroy({
+        where: {
+          UserId: helpers.getUser(req).id,
+          TweetId: Number(req.params.id),
         },
-      )
-      .then((like) => {
-        like
-          .destroy()
-          .then(() => res.redirect('back'));
-      });
+      })
+      .then(() => res.redirect('back'));    
   },
 };
 

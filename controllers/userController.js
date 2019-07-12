@@ -210,19 +210,13 @@ const userController = {
 
   removeFollowing: (req, res) => {
     return Followship
-      .findOne(
-        {
-          where: {
-            followerId: helpers.getUser(req).id,
-            followingId: req.params.id,
-          },
+      .destroy({
+        where: {
+          followerId: helpers.getUser(req).id,
+          followingId: Number(req.params.id),
         },
-      )
-      .then((followship) => {
-        followship
-          .destroy()
-          .then(() => res.redirect('back'));
-      });
+      })
+      .then(() => res.redirect('back'));
   },
 
   getFollower: (req, res) => {

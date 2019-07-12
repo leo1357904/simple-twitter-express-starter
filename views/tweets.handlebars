@@ -17,7 +17,7 @@
 		      </div>
 					<div class="col-md-8">
 		        <div class="card-body">
-		          <h5 class="card-title" style="color:blue;">{{this.User.name}}, {{moment this.createdAt}}</h5>
+		          <a href="/users/{{this.User.id}}/tweets" class="card-link" style="font-size:21px; color: blue;">{{this.User.name}}, {{moment this.createdAt}}</a>
 		          <p class="card-text">{{this.description}}</p>
 		          <div class="row">
 		          	<a href="/tweets/{{this.id}}/replies" class="btn btn-link">Reply({{this.replyCount}})</a>
